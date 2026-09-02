@@ -47,7 +47,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setActiveTab }) => {
 
             {/* Subheadline / Description */}
             <p className="text-slate-600 dark:text-slate-300 text-base sm:text-lg max-w-lg mb-8 leading-relaxed">
-              Understand essential data structures and algorithms through interactive visualizers, structured curricula, and AI-driven coaching.
+              Understand essential data structures and algorithms through interactive visualizers, structured curricula, and direct teacher guidance.
             </p>
 
             {/* Highlighted feature bullets (Royal Blue + Violet touches) */}
@@ -66,7 +66,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setActiveTab }) => {
               </div>
               <div className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                <span>AI Reasoning Assistant</span>
+                <span>Ask a Teacher Support</span>
               </div>
             </div>
 

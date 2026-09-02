@@ -44,6 +44,164 @@ async function startServer() {
   });
 
   // ============================================================
+  // STUDENT QUESTIONS & TEACHER REPLIES STORE
+  // ============================================================
+
+  let serverQuestions = [
+    {
+      id: "q-101",
+      studentId: "std-101",
+      studentName: "Rahul Sharma",
+      studentAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      teacherId: "teacher-priya",
+      teacherName: "Dr. Priya Sharma",
+      teacherSubject: "Data Structures & Algorithms",
+      topicTitle: "Binary Search Tree",
+      status: "Pending",
+      createdAt: "Today, 10:24 AM",
+      updatedAt: "Today, 10:24 AM",
+      messages: [
+        {
+          messageId: "m-1",
+          conversationId: "q-101",
+          senderId: "std-101",
+          senderRole: "student",
+          senderName: "Rahul Sharma",
+          message: "Why do we compare the new node with the root first in BST insertion? Can we start from a leaf node instead?",
+          createdAt: "10:24 AM",
+        },
+      ],
+    },
+    {
+      id: "q-102",
+      studentId: "std-102",
+      studentName: "Ananya Patel",
+      studentAvatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+      teacherId: "teacher-kavitha",
+      teacherName: "Ms. Kavitha Reddy",
+      teacherSubject: "Linear Data Structures",
+      topicTitle: "Doubly Linked List",
+      status: "Pending",
+      createdAt: "Today, 11:45 AM",
+      updatedAt: "Today, 11:45 AM",
+      messages: [
+        {
+          messageId: "m-2",
+          conversationId: "q-102",
+          senderId: "std-102",
+          senderRole: "student",
+          senderName: "Ananya Patel",
+          message: "How does deletion in a Doubly Linked List maintain both prev and next pointers without creating dangling references?",
+          createdAt: "11:45 AM",
+        },
+      ],
+    },
+    {
+      id: "q-103",
+      studentId: "std-103",
+      studentName: "Marcus Vance",
+      studentAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      teacherId: "teacher-arjun",
+      teacherName: "Prof. Arjun Mehta",
+      teacherSubject: "Algorithms & Complexity",
+      topicTitle: "Graph Algorithms",
+      status: "Answered",
+      createdAt: "Yesterday, 4:10 PM",
+      updatedAt: "Yesterday, 4:42 PM",
+      messages: [
+        {
+          messageId: "m-3",
+          conversationId: "q-103",
+          senderId: "std-103",
+          senderRole: "student",
+          senderName: "Marcus Vance",
+          message: "What is the time complexity difference between adjacency matrix and adjacency list when doing BFS?",
+          createdAt: "4:10 PM",
+        },
+        {
+          messageId: "m-4",
+          conversationId: "q-103",
+          senderId: "teacher-arjun",
+          senderRole: "teacher",
+          senderName: "Prof. Arjun Mehta",
+          message: "In an adjacency list, BFS takes O(V + E) time because you only examine neighbors that actually exist. With an adjacency matrix, you must iterate over all V cells in a row for every vertex, resulting in O(V²) time regardless of edge count. For sparse graphs, the list is much faster!",
+          createdAt: "4:42 PM",
+        },
+      ],
+    },
+  ];
+
+  app.get("/api/questions", (_req, res) => {
+    res.json({ questions: serverQuestions });
+  });
+
+  app.post("/api/questions", (req, res) => {
+    const { studentId, studentName, studentAvatar, teacherId, teacherName, teacherSubject, topicTitle, message } = req.body;
+    if (!message || !teacherId) {
+      return res.status(400).json({ error: "Missing required question parameters." });
+    }
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const newQuestion = {
+      id: "q-" + Date.now(),
+      studentId: studentId || "std-current",
+      studentName: studentName || "Student",
+      studentAvatar: studentAvatar || "",
+      teacherId,
+      teacherName: teacherName || "Teacher",
+      teacherSubject: teacherSubject || "DSA Expert",
+      topicTitle: topicTitle || "Data Structures",
+      status: "Pending",
+      createdAt: "Today, " + timeStr,
+      updatedAt: "Today, " + timeStr,
+      messages: [
+        {
+          messageId: "msg-" + Date.now(),
+          conversationId: "q-" + Date.now(),
+          senderId: studentId || "std-current",
+          senderRole: "student",
+          senderName: studentName || "Student",
+          message,
+          createdAt: timeStr,
+        },
+      ],
+    };
+
+    serverQuestions.unshift(newQuestion);
+    res.status(201).json({ question: newQuestion });
+  });
+
+  app.post("/api/questions/:id/reply", (req, res) => {
+    const { id } = req.params;
+    const { answer, teacherName, teacherId } = req.body;
+    if (!answer) {
+      return res.status(400).json({ error: "Reply message cannot be empty." });
+    }
+
+    const question = serverQuestions.find((q) => q.id === id);
+    if (!question) {
+      return res.status(404).json({ error: "Question not found." });
+    }
+
+    const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const replyMessage = {
+      messageId: "msg-reply-" + Date.now(),
+      conversationId: id,
+      senderId: teacherId || question.teacherId,
+      senderRole: "teacher",
+      senderName: teacherName || question.teacherName,
+      message: answer,
+      createdAt: timeStr,
+    };
+
+    question.messages.push(replyMessage);
+    question.status = "Answered";
+    question.updatedAt = "Today, " + timeStr;
+
+    res.json({ question });
+  });
+
+  // ============================================================
   // AI CHAT
   // ============================================================
 

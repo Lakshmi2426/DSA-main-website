@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider, useUser } from './context/UserContext';
+import { QuestionsProvider } from './context/QuestionsContext';
 import { AlgorithmBackground } from './components/common/AlgorithmBackground';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -13,18 +14,17 @@ import { LearningJourneySection } from './components/home/LearningJourneySection
 import { AIAssistantPreviewSection } from './components/home/AIAssistantPreviewSection';
 import { LeaderboardPreviewSection } from './components/home/LeaderboardPreviewSection';
 import { TopicsCatalog } from './components/topics/TopicsCatalog';
-import { AIAssistantWorkspace } from './components/ai/AIAssistantWorkspace';
+import { TeacherWorkspace } from './components/teacher/TeacherWorkspace';
 import { LeaderboardView } from './components/leaderboard/LeaderboardView';
 import { StudentProfileView } from './components/profile/StudentProfileView';
 import { AdminDashboardView } from './components/admin/AdminDashboardView';
 import { AboutView } from './components/about/AboutView';
 import { AuthModal } from './components/auth/AuthModal';
-import { AlgoAIIcon } from './components/common/AlgoAIIcon';
 import { NavigationTab } from './types';
 
 const MainAppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavigationTab>('home');
-  const [aiAssistantPrompt, setAiAssistantPrompt] = useState<string>('');
+  const [teacherInitialTopic, setTeacherInitialTopic] = useState<string>('');
   const {
     showAuthModal,
     setShowAuthModal,
@@ -32,9 +32,9 @@ const MainAppContent: React.FC = () => {
     setAuthModalMode,
   } = useUser();
 
-  const handleQuickAskAI = (prompt: string) => {
-    setAiAssistantPrompt(prompt);
-    setActiveTab('ai-assistant');
+  const handleQuickAsk = (prompt: string) => {
+    setTeacherInitialTopic(prompt);
+    setActiveTab('ask-teacher');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -83,10 +83,10 @@ const MainAppContent: React.FC = () => {
               {/* 4. Learning Journey Methodology */}
               <LearningJourneySection setActiveTab={setActiveTab} />
 
-              {/* 5. AI Code Tutor Preview */}
+              {/* 5. Ask a Teacher Preview */}
               <AIAssistantPreviewSection
                 setActiveTab={setActiveTab}
-                onQuickAsk={handleQuickAskAI}
+                onQuickAsk={handleQuickAsk}
               />
 
               {/* 6. Global Arena / Leaderboard Podium Preview */}
@@ -106,15 +106,18 @@ const MainAppContent: React.FC = () => {
             </motion.div>
           )}
 
-          {activeTab === 'ai-assistant' && (
+          {activeTab === 'ask-teacher' && (
             <motion.div
-              key="ai-assistant"
+              key="ask-teacher"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
             >
-              <AIAssistantWorkspace initialPrompt={aiAssistantPrompt} />
+              <TeacherWorkspace
+                initialTopicTitle={teacherInitialTopic || undefined}
+                setActiveTab={setActiveTab}
+              />
             </motion.div>
           )}
 
@@ -168,24 +171,25 @@ const MainAppContent: React.FC = () => {
         </AnimatePresence>
       </main>
 
-      {/* Floating Action Button (Algo AI Assistant) - Rendered on all pages EXCEPT AI Assistant */}
-      {activeTab !== 'ai-assistant' && (
+      {/* Floating Action Button — "Ask a Teacher" — Shown on all pages EXCEPT teacher workspace */}
+      {activeTab !== 'ask-teacher' && (
         <button
           onClick={() => {
-            setActiveTab('ai-assistant');
+            setTeacherInitialTopic('');
+            setActiveTab('ask-teacher');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          aria-label="Open Algo AI Assistant"
-          title="Ask Algo AI Assistant"
-          className="fixed bottom-6 right-6 z-40 w-13 h-13 sm:w-15 sm:h-15 p-1 rounded-full bg-white dark:bg-slate-900 border-2 border-blue-300/90 hover:border-blue-500 dark:border-blue-600/80 dark:hover:border-blue-400 shadow-[0_8px_24px_-4px_rgba(37,99,235,0.28),0_0_16px_rgba(99,102,241,0.18)] hover:shadow-[0_12px_32px_-2px_rgba(37,99,235,0.42),0_0_24px_rgba(99,102,241,0.32)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.6),0_0_20px_rgba(59,130,246,0.3)] hover:scale-108 active:scale-95 transition-all duration-200 flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer select-none"
-          id="floating-quick-ai-btn"
+          aria-label="Ask a Teacher"
+          title="Ask a Teacher — Get DSA help from an expert"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 shadow-[0_8px_24px_-4px_rgba(37,99,235,0.45),0_0_16px_rgba(99,102,241,0.25)] hover:shadow-[0_12px_32px_-2px_rgba(37,99,235,0.55),0_0_24px_rgba(124,58,237,0.35)] hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 cursor-pointer select-none"
+          id="floating-ask-teacher-btn"
         >
-          <AlgoAIIcon size="lg" className="w-full h-full" alt="Algo AI Assistant" />
+          <MessageCircle className="w-6 h-6 text-white" />
         </button>
       )}
 
-      {/* Global Footer - Rendered on all pages except AI Assistant */}
-      {activeTab !== 'ai-assistant' && <Footer setActiveTab={setActiveTab} />}
+      {/* Global Footer — Rendered on all pages except Ask a Teacher workspace */}
+      {activeTab !== 'ask-teacher' && <Footer setActiveTab={setActiveTab} />}
 
       {/* Authentication Modal */}
       <AuthModal
@@ -202,7 +206,9 @@ export default function App() {
   return (
     <ThemeProvider>
       <UserProvider>
-        <MainAppContent />
+        <QuestionsProvider>
+          <MainAppContent />
+        </QuestionsProvider>
       </UserProvider>
     </ThemeProvider>
   );

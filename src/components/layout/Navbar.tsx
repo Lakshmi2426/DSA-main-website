@@ -9,7 +9,7 @@ import {
   X,
   Shield,
   KeyRound,
-  Sparkles,
+  MessageCircle,
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
@@ -37,11 +37,15 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems: { id: NavigationTab; label: string }[] = [
+  const navItems: { id: NavigationTab; label: string; icon?: React.ReactNode }[] = [
     { id: 'home', label: 'Home' },
     { id: 'topics', label: 'Topics' },
     { id: 'leaderboard', label: 'Leaderboard' },
-    { id: 'ai-assistant', label: 'AI Assistant' },
+    {
+      id: 'ask-teacher',
+      label: role === 'admin' ? 'Student Questions' : 'Ask a Teacher',
+      icon: <MessageCircle className="w-3.5 h-3.5" />,
+    },
     { id: 'about', label: 'About' },
   ];
 
@@ -101,6 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
               >
                 <span className="flex items-center gap-1.5">
                   {item.id === 'admin' && <Shield className="w-3.5 h-3.5 text-blue-500" />}
+                  {item.icon && item.id !== 'admin' && <span className="opacity-80">{item.icon}</span>}
                   {item.label}
                 </span>
                 {isActive && (
@@ -292,6 +297,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
                 >
                   <span className="flex items-center gap-2">
                     {item.id === 'admin' && <Shield className="w-4 h-4" />}
+                    {item.icon && item.id !== 'admin' && <span>{item.icon}</span>}
                     {item.label}
                   </span>
                 </button>

@@ -15,6 +15,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
+import { Logo } from '../common/Logo';
 import { NavigationTab } from '../../types';
 
 interface AuthModalProps {
@@ -186,12 +187,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <>
                   <li>• Student Learning Progress Dashboard</li>
                   <li>• Cohort Topic Mastery Statistics</li>
-                  <li>• Individual Student Analytics Drawer</li>
+                  <li>• Student Question Management & Replies</li>
                 </>
               ) : (
                 <>
                   <li>• 18 Interactive Data Structure Modules</li>
-                  <li>• AlgoLearn AI Assistant Tutor</li>
+                  <li>• Direct Ask a Teacher Question System</li>
                   <li>• Streak Tracker & Global Leaderboard</li>
                 </>
               )}
@@ -202,6 +203,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Right Form Panel (Col 6-12) */}
         <div className="p-6 sm:p-10 md:col-span-7 flex flex-col justify-between text-left max-h-[90vh] overflow-y-auto">
           <div>
+            <div className="mb-4">
+              <Logo size="sm" />
+            </div>
+
             {/* Mode switch */}
             <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-6 max-w-sm">
               <button

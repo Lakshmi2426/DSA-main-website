@@ -26,7 +26,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
     ],
     recentActivities: [
       { id: 'act-1', title: 'Explored Binary Search Midpoint halving', type: 'visualization_run', timestamp: '2 hours ago' },
-      { id: 'act-2', title: 'Asked AI Assistant about Stack vs Queue memory', type: 'ai_tutoring', timestamp: '4 hours ago' },
+      { id: 'act-2', title: 'Asked Teacher about Stack vs Queue memory', type: 'teacher_question', timestamp: '4 hours ago' },
       { id: 'act-3', title: 'Completed Insertion Sort module test', type: 'quiz_completed', timestamp: 'Yesterday' },
     ],
   },
@@ -256,7 +256,7 @@ const defaultUser: UserProfile = {
     },
     {
       id: 'act-4',
-      action: 'AI Tutor Session',
+      action: 'Teacher Question Session',
       target: 'Dijkstra Priority Queue Proof',
       xpEarned: 50,
       timestamp: '2 days ago',

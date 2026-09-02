@@ -192,7 +192,7 @@ export const StudentProfileView: React.FC = () => {
                 52-Week Practice Consistency Matrix
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                Telemetry from visualizer inspections, practice exercises, and AI tutoring inquiries.
+                Telemetry from visualizer inspections, practice exercises, and teacher question inquiries.
               </p>
             </div>
             <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">

@@ -116,12 +116,12 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
               <li>
                 <button
                   onClick={() => {
-                    setActiveTab('ai-assistant');
+                    setActiveTab('ask-teacher');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
-                  AlgoLearn AI Assistant
+                  Ask a Teacher
                 </button>
               </li>
               <li>

@@ -31,7 +31,7 @@ export const LearningJourneySection: React.FC<LearningJourneySectionProps> = ({ 
       step: '02',
       title: 'Visualize',
       badge: 'Interactive Tracing',
-      desc: 'Watch AI-generated educational videos that explain DSA concepts visually, demonstrate algorithm execution, and make complex ideas easier to understand.',
+      desc: 'Watch animated educational visualizers that explain DSA concepts step-by-step, demonstrate algorithm execution, and make complex ideas intuitive.',
       icon: Eye,
       color: '#2563eb', // Royal Blue
       accentGrad: 'from-[#1D4ED8] via-[#2563EB] to-[#6366F1]',

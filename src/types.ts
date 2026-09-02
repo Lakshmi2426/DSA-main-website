@@ -4,7 +4,7 @@ export type NavigationTab =
   | 'home' 
   | 'topics' 
   | 'leaderboard' 
-  | 'ai-assistant' 
+  | 'ask-teacher' 
   | 'profile' 
   | 'about'
   | 'admin';
@@ -53,7 +53,7 @@ export interface StudentProgressRecord {
   recentActivities: {
     id: string;
     title: string;
-    type: 'concept_read' | 'visualization_run' | 'ai_tutoring' | 'quiz_completed';
+    type: 'concept_read' | 'visualization_run' | 'teacher_question' | 'quiz_completed';
     timestamp: string;
   }[];
 }
@@ -137,13 +137,40 @@ export interface UserProfile {
   }[];
 }
 
-export interface ChatMessage {
+// ─── Teacher / Ask a Teacher Types ───────────────────────────────────────────
+
+export interface Teacher {
   id: string;
-  sender: 'user' | 'assistant';
-  text: string;
-  timestamp: string;
-  codeSnippet?: string;
-  language?: string;
-  suggestedFollowups?: string[];
-  model?: string;
+  name: string;
+  subject: string;
+  avatarInitials: string;
+  avatarGradient: string;
+}
+
+export type ConversationStatus = 'Pending' | 'Answered';
+
+export interface TeacherMessage {
+  messageId: string;
+  conversationId: string;
+  senderId: string;
+  senderRole: 'student' | 'teacher';
+  senderName: string;
+  message: string;
+  createdAt: string;
+}
+
+export interface StudentQuestion {
+  id: string;
+  studentId: string;
+  studentName: string;
+  studentAvatar?: string;
+  teacherId: string;
+  teacherName: string;
+  teacherSubject: string;
+  topicId?: string;
+  topicTitle?: string;
+  status: ConversationStatus;
+  createdAt: string;
+  updatedAt: string;
+  messages: TeacherMessage[];
 }

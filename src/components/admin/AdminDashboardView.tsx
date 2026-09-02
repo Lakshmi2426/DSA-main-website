@@ -23,6 +23,9 @@ import {
   Calendar,
   Mail,
   Award,
+  LogOut,
+  User as UserIcon,
+  MessageSquare,
 } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { StudentProgressRecord, NavigationTab } from '../../types';
@@ -33,6 +36,7 @@ interface AdminDashboardViewProps {
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ setActiveTab }) => {
   const { studentsList, user, logout } = useUser();
+  const [showAdminProfileMenu, setShowAdminProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProgressFilter, setSelectedProgressFilter] = useState<'All' | 'High' | 'Medium' | 'Low'>('All');
   const [sortBy, setSortBy] = useState<'progress' | 'streak' | 'name' | 'lastActive'>('progress');
@@ -110,20 +114,86 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ setActiv
 
           <div className="flex items-center gap-3">
             <button
+              onClick={() => setActiveTab('ask-teacher')}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
+              id="admin-student-questions-nav-btn"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Student Questions</span>
+            </button>
+            <button
               onClick={() => setActiveTab('topics')}
-              className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
+              className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer"
             >
               Browse 18 Modules
             </button>
-            <button
-              onClick={() => {
-                logout();
-                setActiveTab('home');
-              }}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all cursor-pointer"
-            >
-              Exit Admin Mode
-            </button>
+
+            {/* Profile Avatar Icon with Sign Out Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setShowAdminProfileMenu(!showAdminProfileMenu)}
+                className="flex items-center gap-2 p-1.5 rounded-full bg-white dark:bg-slate-900 border-2 border-blue-500/50 hover:border-blue-500 transition-all cursor-pointer shadow-xs"
+                id="admin-dashboard-profile-btn"
+                aria-label="Admin Profile Menu"
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    'AD'
+                  )}
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {showAdminProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200/90 dark:border-slate-800 shadow-xl p-2 z-50 text-left"
+                  >
+                    <div className="p-3 border-b border-slate-100 dark:border-slate-800">
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">
+                        {user.name}
+                      </p>
+                      <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono text-[9px] font-bold">
+                        ADMINISTRATOR
+                      </span>
+                    </div>
+
+                    <div className="py-1 space-y-0.5">
+                      <button
+                        onClick={() => {
+                          setActiveTab('profile');
+                          setShowAdminProfileMenu(false);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50/70 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                      >
+                        <UserIcon className="w-4 h-4 text-blue-500" />
+                        Profile
+                      </button>
+                    </div>
+
+                    <div className="pt-1 border-t border-slate-100 dark:border-slate-800">
+                      <button
+                        onClick={() => {
+                          logout();
+                          setShowAdminProfileMenu(false);
+                          setActiveTab('home');
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer"
+                        id="admin-dashboard-signout-btn"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
