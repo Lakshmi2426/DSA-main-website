@@ -1,0 +1,264 @@
+import React from 'react';
+import { motion } from 'motion/react';
+import {
+  Boxes,
+  LayoutGrid,
+  Search,
+  Split,
+  SlidersHorizontal,
+  ArrowDownToLine,
+  ArrowRightLeft,
+  Target,
+  Layers,
+  Link2,
+  UnfoldHorizontal,
+  CircleDot,
+  MoveRight,
+  RotateCw,
+  ListOrdered,
+  Radio,
+  FolderTree,
+  Binary,
+  Hash,
+  Shuffle,
+  GitMerge,
+  ChevronsLeftRight,
+  Network,
+  CornerDownRight,
+  BarChart3,
+  FileText,
+  ArrowRight,
+  CheckCircle2,
+} from 'lucide-react';
+import { DSATopic } from '../../types';
+
+interface DSATopicCardProps {
+  topic: DSATopic;
+  index?: number;
+  onSelect: (topic: DSATopic) => void;
+}
+
+// Topic Icon Resolver
+export const getTopicIconComponent = (iconName: string) => {
+  switch (iconName) {
+    case 'Boxes':
+    case 'LayoutGrid':
+      return Boxes;
+    case 'Search':
+      return Search;
+    case 'Split':
+    case 'SlidersHorizontal':
+      return Split;
+    case 'ArrowDownToLine':
+    case 'ArrowUpDown':
+      return ArrowDownToLine;
+    case 'ArrowRightLeft':
+      return ArrowRightLeft;
+    case 'Target':
+    case 'CheckCircle':
+      return Target;
+    case 'Layers':
+      return Layers;
+    case 'Link2':
+    case 'Link':
+      return Link2;
+    case 'UnfoldHorizontal':
+    case 'ArrowLeftRight':
+      return UnfoldHorizontal;
+    case 'CircleDot':
+    case 'RotateCcw':
+      return CircleDot;
+    case 'MoveRight':
+    case 'ArrowRight':
+      return MoveRight;
+    case 'RotateCw':
+    case 'RefreshCw':
+      return RotateCw;
+    case 'ListOrdered':
+      return ListOrdered;
+    case 'Radio':
+    case 'Share2':
+    case 'Maximize2':
+      return Radio;
+    case 'FolderTree':
+      return FolderTree;
+    case 'Binary':
+    case 'GitFork':
+      return Binary;
+    case 'Hash':
+      return Hash;
+    case 'Shuffle':
+    case 'ShieldAlert':
+      return Shuffle;
+    case 'GitMerge':
+      return GitMerge;
+    case 'ChevronsLeftRight':
+      return ChevronsLeftRight;
+    case 'Network':
+      return Network;
+    case 'CornerDownRight':
+      return CornerDownRight;
+    case 'BarChart3':
+      return BarChart3;
+    default:
+      return Boxes;
+  }
+};
+
+// Map raw category values to human-readable display labels
+const getCategoryLabel = (category: string): string => {
+  switch (category) {
+    case 'Linear':
+      return 'DATA STRUCTURES';
+    case 'Tree & Graph':
+      return 'TREES & GRAPHS';
+    case 'Algorithms':
+      return 'ALGORITHMS';
+    case 'Advanced':
+      return 'ADVANCED';
+    default:
+      return category.toUpperCase();
+  }
+};
+
+export const DSATopicCard: React.FC<DSATopicCardProps> = ({
+  topic,
+  index = 0,
+  onSelect,
+}) => {
+  const TopicIcon = getTopicIconComponent(topic.iconName);
+
+  // Use algorithms[] for CONCEPTS COVERED — show up to 4
+  const concepts = topic.algorithms.slice(0, 4);
+
+  // Mastered concept count derived from progress %
+  const masteredConcepts = Math.max(
+    1,
+    Math.round((topic.progress / 100) * topic.conceptsCount)
+  );
+
+  // Circular progress ring geometry (radius 16)
+  const radius = 16;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset =
+    circumference - (topic.progress / 100) * circumference;
+
+  const categoryLabel = getCategoryLabel(topic.category);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: index * 0.02 }}
+      whileHover={{ y: -3 }}
+      onClick={() => onSelect(topic)}
+      className="group relative rounded-2xl p-[1px] bg-gradient-to-b from-[#D8E2F5] to-[#C4D0E8] hover:from-blue-500 hover:to-indigo-500 dark:from-[#243554]/80 dark:to-[#1a2640]/60 dark:hover:from-blue-500/70 dark:hover:to-indigo-500/70 transition-all duration-200 select-none cursor-pointer text-left h-full"
+      id={`topic-card-${topic.id}`}
+    >
+      <div className="bg-white dark:bg-[#0B1224] rounded-[15px] p-5 h-full flex flex-col relative overflow-hidden transition-colors duration-200">
+
+        {/* TOP: CATEGORY + CONCEPT COUNT */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#2563EB] dark:text-blue-400">
+            {categoryLabel}
+          </span>
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EFF6FF] dark:bg-[#162238] border border-[#D8E2F5] dark:border-[#243554] text-[#111827] dark:text-[#A8B7D1] text-[10px] font-semibold">
+            <FileText className="w-3 h-3 text-[#2563EB] dark:text-blue-400 shrink-0" />
+            <span>{topic.conceptsCount} Concepts</span>
+          </div>
+        </div>
+
+        {/* ICON + TOPIC TITLE */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1D4ED8] via-[#2563EB] to-[#6366F1] flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform duration-200 shadow-sm shadow-blue-500/20">
+            <TopicIcon style={{ width: '18px', height: '18px', strokeWidth: 2.2 }} />
+          </div>
+          <h3 className="text-sm sm:text-[15px] font-bold text-[#111827] dark:text-[#F8FAFC] leading-tight line-clamp-2 group-hover:text-[#2563EB] dark:group-hover:text-[#60A5FA] transition-colors">
+            {topic.title}
+          </h3>
+        </div>
+
+        {/* DESCRIPTION */}
+        <p className="text-[12px] text-[#64748B] dark:text-[#A8B7D1] leading-relaxed line-clamp-2 mb-3">
+          {topic.shortDescription}
+        </p>
+
+        {/* CONCEPTS COVERED */}
+        <div className="flex-1 mb-3">
+          <div className="text-[9px] font-mono font-bold tracking-widest text-[#64748B] dark:text-[#8FA1BA] uppercase mb-1.5">
+            Concepts Covered
+          </div>
+          <ul className="space-y-1">
+            {concepts.map((concept, i) => (
+              <li key={i} className="flex items-start gap-1.5">
+                <CheckCircle2 className="w-3 h-3 text-[#2563EB] dark:text-blue-400 shrink-0 mt-[1px]" />
+                <span className="text-[11px] text-[#111827] dark:text-[#A8B7D1] leading-tight line-clamp-1">
+                  {concept}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* BOTTOM: PROGRESS + ARROW */}
+        <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#243554] flex items-center justify-between mt-auto">
+
+          {/* Circular Progress + Mastery Label */}
+          <div className="flex items-center gap-2">
+            <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
+              <svg className="w-9 h-9 -rotate-90" viewBox="0 0 40 40">
+                <circle
+                  cx="20"
+                  cy="20"
+                  r={radius}
+                  className="stroke-current text-slate-200 dark:text-[#1E2E4A]"
+                  strokeWidth="3"
+                  fill="none"
+                />
+                <circle
+                  cx="20"
+                  cy="20"
+                  r={radius}
+                  className="stroke-current transition-all duration-700 ease-out"
+                  stroke={`url(#pg-${topic.id})`}
+                  strokeWidth="3"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <defs>
+                  <linearGradient id={`pg-${topic.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#1D4ED8" />
+                    <stop offset="75%" stopColor="#2563EB" />
+                    <stop offset="100%" stopColor="#6366F1" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span className="absolute text-[9px] font-mono font-bold text-[#111827] dark:text-[#F8FAFC]">
+                {topic.progress}%
+              </span>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-bold text-[#111827] dark:text-[#F8FAFC] leading-none">
+                Mastered
+              </div>
+              <div className="text-[10px] text-[#64748B] dark:text-[#A8B7D1] mt-0.5">
+                {masteredConcepts} / {topic.conceptsCount}
+              </div>
+            </div>
+          </div>
+
+          {/* Arrow Action Button */}
+          <div
+            className="w-8 h-8 rounded-xl bg-gradient-to-r from-[#1D4ED8] via-[#2563EB] to-[#6366F1] hover:from-[#1E40AF] hover:to-[#2563EB] text-white flex items-center justify-center transition-all duration-200 group-hover:scale-105 shadow-sm shadow-blue-600/20"
+            id={`open-topic-btn-${topic.id}`}
+          >
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};

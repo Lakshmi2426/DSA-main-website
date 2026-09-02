@@ -1,0 +1,6 @@
+{
+  "name": "AlgoLearn",
+  "description": "Interactive Data Structures and Algorithms learning platform with 3D visualizations, structured 18-topic curriculum, AI tutor, leaderboards, and progress tracking.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
