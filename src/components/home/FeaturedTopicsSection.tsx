@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { DSA_TOPICS } from '../../data/dsaTopics';
 import { NavigationTab, DSATopic } from '../../types';
 import { DSATopicCard } from '../topics/DSATopicCard';
+import { TopicDetailModal } from '../topics/TopicDetailModal';
 
 interface FeaturedTopicsSectionProps {
   setActiveTab: (tab: NavigationTab) => void;
@@ -14,7 +15,7 @@ export const FeaturedTopicsSection: React.FC<FeaturedTopicsSectionProps> = ({
 }) => {
   const [selectedTopic, setSelectedTopic] = useState<DSATopic | null>(null);
 
-  // Home page featured topics (Data Structures, Linear Search, Stack, Binary Search Tree, etc.)
+  // Home page featured topics (Data Structures, Sorting, Stack, Hashing, etc.)
   const featuredTopics = DSA_TOPICS.filter((t) => t.featuredOnHome);
 
   return (
@@ -44,7 +45,7 @@ export const FeaturedTopicsSection: React.FC<FeaturedTopicsSectionProps> = ({
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 shadow-md shadow-blue-600/25 hover:shadow-lg hover:shadow-blue-600/35 hover:-translate-y-0.5 self-start md:self-auto group cursor-pointer"
             id="view-all-topics-top-btn"
           >
-            <span>Full 18 Topics Catalog</span>
+            <span>Explore All Topics</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -62,7 +63,15 @@ export const FeaturedTopicsSection: React.FC<FeaturedTopicsSectionProps> = ({
         </div>
       </div>
 
-
+      {/* Topic Detail Modal */}
+      <TopicDetailModal
+        topic={selectedTopic}
+        onClose={() => setSelectedTopic(null)}
+        onAskTeacher={() => {
+          setActiveTab('ask-teacher');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      />
     </section>
   );
 };

@@ -19,9 +19,11 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
                 setActiveTab('home');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="text-left focus:outline-none"
+              className="text-left bg-transparent border-0 shadow-none p-0 cursor-pointer focus:outline-none"
+              style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
+              aria-label="AlgoLearn Home"
             >
-              <Logo />
+              <Logo size="md" />
             </button>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
               Interactive Data Structures & Algorithms platform designed for deep conceptual intuition, step-by-step visualizations, and AI-accelerated mastery.

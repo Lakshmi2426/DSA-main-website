@@ -28,6 +28,10 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
+import { useTeachers } from '../../context/TeachersContext';
+import { useQuestions } from '../../context/QuestionsContext';
+import { AdminTeacherQuestionsView } from '../teacher/AdminTeacherQuestionsView';
+import { AdminTeacherManagementView } from './AdminTeacherManagementView';
 import { StudentProgressRecord, NavigationTab } from '../../types';
 
 interface AdminDashboardViewProps {
@@ -35,13 +39,18 @@ interface AdminDashboardViewProps {
 }
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ setActiveTab }) => {
-  const { studentsList, user, logout } = useUser();
-  const [showAdminProfileMenu, setShowAdminProfileMenu] = useState(false);
+  const { studentsList, user, role, isAuthenticated, setShowAuthModal, setAuthModalMode } = useUser();
+  const { teachers } = useTeachers();
+  const { questions } = useQuestions();
+  const [adminSection, setAdminSection] = useState<'curriculum' | 'questions' | 'teachers'>('curriculum');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProgressFilter, setSelectedProgressFilter] = useState<'All' | 'High' | 'Medium' | 'Low'>('All');
   const [sortBy, setSortBy] = useState<'progress' | 'streak' | 'name' | 'lastActive'>('progress');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedStudent, setSelectedStudent] = useState<StudentProgressRecord | null>(null);
+  const [exportNotice, setExportNotice] = useState<string | null>(null);
+
+  const pendingQuestionsCount = questions.filter((q) => q.status === 'Pending').length;
 
   // Overview metrics
   const totalStudents = 1420;
@@ -94,108 +103,124 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ setActiv
     }
   };
 
+  if (!isAuthenticated || role !== 'admin') {
+    return (
+      <div className="pt-28 pb-20 min-h-screen flex items-center justify-center px-4 text-center">
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl p-8 border border-blue-200/80 dark:border-slate-800 shadow-xl text-left">
+          <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
+            <Shield className="w-7 h-7" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            Administrator Access Restricted
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+            This administrative control center is restricted to authorized faculty and staff. Please sign in with your administrative credentials to continue.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                setAuthModalMode('admin');
+                setShowAuthModal(true);
+              }}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
+            >
+              Sign In as Administrator
+            </button>
+            <button
+              onClick={() => setActiveTab('home')}
+              className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer text-center"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pt-24 pb-20 min-h-screen text-left">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* Top Header & Admin Badge */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+        {/* Top Header & Admin Section Navigation Tabs (NO duplicate profile avatar) */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider mb-2 font-mono">
               <Shield className="w-3.5 h-3.5" />
               Administrative Control Center
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Student Progress & Curriculum Monitor
+              {adminSection === 'curriculum' && 'Student Progress & Curriculum Monitor'}
+              {adminSection === 'questions' && 'Student Questions'}
+              {adminSection === 'teachers' && 'Teacher Management'}
             </h1>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Track student engagement, topic completion rates, and learning streaks across 18 DSA modules.
+              {adminSection === 'curriculum' && 'Track student engagement, topic completion rates, and learning streaks across 18 DSA modules.'}
+              {adminSection === 'questions' && 'Questions asked by students. Review student queries, view conversation history, and reply directly.'}
+              {adminSection === 'teachers' && 'Manage expert educators available for student questions. Added teachers instantly appear in the Ask a Teacher workspace.'}
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Admin Navigation Tabs */}
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit shrink-0">
             <button
-              onClick={() => setActiveTab('ask-teacher')}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
-              id="admin-student-questions-nav-btn"
+              onClick={() => setAdminSection('curriculum')}
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                adminSection === 'curriculum'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              id="admin-tab-curriculum"
             >
-              <MessageSquare className="w-3.5 h-3.5" />
+              <BarChart3 className="w-4 h-4" />
+              <span>Curriculum Monitor</span>
+            </button>
+            <button
+              onClick={() => setAdminSection('questions')}
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                adminSection === 'questions'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              id="admin-tab-questions"
+            >
+              <MessageSquare className="w-4 h-4" />
               <span>Student Questions</span>
+              {pendingQuestionsCount > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-mono font-bold">
+                  {pendingQuestionsCount}
+                </span>
+              )}
             </button>
             <button
-              onClick={() => setActiveTab('topics')}
-              className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+              onClick={() => setAdminSection('teachers')}
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                adminSection === 'teachers'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              id="admin-tab-teachers"
             >
-              Browse 18 Modules
+              <GraduationCap className="w-4 h-4" />
+              <span>Teachers</span>
+              <span className="px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-mono font-bold border border-blue-200 dark:border-blue-800">
+                {teachers.length}
+              </span>
             </button>
-
-            {/* Profile Avatar Icon with Sign Out Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setShowAdminProfileMenu(!showAdminProfileMenu)}
-                className="flex items-center gap-2 p-1.5 rounded-full bg-white dark:bg-slate-900 border-2 border-blue-500/50 hover:border-blue-500 transition-all cursor-pointer shadow-xs"
-                id="admin-dashboard-profile-btn"
-                aria-label="Admin Profile Menu"
-              >
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold text-xs">
-                  {user.avatar ? (
-                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                  ) : (
-                    'AD'
-                  )}
-                </div>
-              </button>
-
-              <AnimatePresence>
-                {showAdminProfileMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200/90 dark:border-slate-800 shadow-xl p-2 z-50 text-left"
-                  >
-                    <div className="p-3 border-b border-slate-100 dark:border-slate-800">
-                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">
-                        {user.name}
-                      </p>
-                      <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono text-[9px] font-bold">
-                        ADMINISTRATOR
-                      </span>
-                    </div>
-
-                    <div className="py-1 space-y-0.5">
-                      <button
-                        onClick={() => {
-                          setActiveTab('profile');
-                          setShowAdminProfileMenu(false);
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50/70 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
-                      >
-                        <UserIcon className="w-4 h-4 text-blue-500" />
-                        Profile
-                      </button>
-                    </div>
-
-                    <div className="pt-1 border-t border-slate-100 dark:border-slate-800">
-                      <button
-                        onClick={() => {
-                          logout();
-                          setShowAdminProfileMenu(false);
-                          setActiveTab('home');
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer"
-                        id="admin-dashboard-signout-btn"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </div>
         </div>
+
+        {/* ── SECTION CONTENT ──────────────────────────────────────────────── */}
+        {adminSection === 'questions' && (
+          <AdminTeacherQuestionsView showHeader={false} />
+        )}
+
+        {adminSection === 'teachers' && (
+          <AdminTeacherManagementView />
+        )}
+
+        {adminSection === 'curriculum' && (
+          <div className="space-y-8">
+
 
         {/* 5 OVERVIEW STAT CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -587,26 +612,36 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({ setActiv
                 </div>
 
                 {/* Modal Footer */}
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
-                  <button
-                    onClick={() => setSelectedStudent(null)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300"
-                  >
-                    Close Drawer
-                  </button>
-                  <button
-                    onClick={() => {
-                      alert(`Progress summary report generated for ${selectedStudent.name}.`);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/20"
-                  >
-                    Export Progress Report
-                  </button>
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                  {exportNotice && (
+                    <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                      {exportNotice}
+                    </span>
+                  )}
+                  <div className="flex items-center gap-2 ml-auto">
+                    <button
+                      onClick={() => setSelectedStudent(null)}
+                      className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer"
+                    >
+                      Close Drawer
+                    </button>
+                    <button
+                      onClick={() => {
+                        setExportNotice(`Progress report exported for ${selectedStudent.name}`);
+                        setTimeout(() => setExportNotice(null), 3500);
+                      }}
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 cursor-pointer"
+                    >
+                      Export Progress Report
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </div>
           )}
         </AnimatePresence>
+          </div>
+        )}
       </div>
     </div>
   );

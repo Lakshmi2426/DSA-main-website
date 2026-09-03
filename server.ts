@@ -52,7 +52,7 @@ async function startServer() {
       id: "q-101",
       studentId: "std-101",
       studentName: "Rahul Sharma",
-      studentAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      studentAvatar: "",
       teacherId: "teacher-priya",
       teacherName: "Dr. Priya Sharma",
       teacherSubject: "Data Structures & Algorithms",
@@ -76,7 +76,7 @@ async function startServer() {
       id: "q-102",
       studentId: "std-102",
       studentName: "Ananya Patel",
-      studentAvatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+      studentAvatar: "",
       teacherId: "teacher-kavitha",
       teacherName: "Ms. Kavitha Reddy",
       teacherSubject: "Linear Data Structures",
@@ -100,7 +100,7 @@ async function startServer() {
       id: "q-103",
       studentId: "std-103",
       studentName: "Marcus Vance",
-      studentAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      studentAvatar: "",
       teacherId: "teacher-arjun",
       teacherName: "Prof. Arjun Mehta",
       teacherSubject: "Algorithms & Complexity",
@@ -131,6 +131,117 @@ async function startServer() {
     },
   ];
 
+  let serverTeachers = [
+    {
+      id: "teacher-priya",
+      name: "Dr. Priya Sharma",
+      email: "priya.sharma@algolearn.edu",
+      subject: "Data Structures & Algorithms",
+      avatarInitials: "PS",
+      avatarGradient: "from-blue-600 via-indigo-600 to-violet-600",
+      description: "Specializes in BSTs, tree traversals, and algorithmic complexity.",
+      createdAt: "System",
+    },
+    {
+      id: "teacher-arjun",
+      name: "Prof. Arjun Mehta",
+      email: "arjun.mehta@algolearn.edu",
+      subject: "Algorithms & Complexity Analysis",
+      avatarInitials: "AM",
+      avatarGradient: "from-blue-700 via-indigo-600 to-indigo-500",
+      description: "Expert in divide and conquer, graph traversals, and recurrence relations.",
+      createdAt: "System",
+    },
+    {
+      id: "teacher-kavitha",
+      name: "Ms. Kavitha Reddy",
+      email: "kavitha.reddy@algolearn.edu",
+      subject: "Linear Data Structures & Pointers",
+      avatarInitials: "KR",
+      avatarGradient: "from-indigo-600 via-blue-600 to-blue-500",
+      description: "Specialist in linked lists, stack/queue architectures, and pointer safety.",
+      createdAt: "System",
+    },
+    {
+      id: "teacher-ravi",
+      name: "Dr. Ravi Kumar",
+      email: "ravi.kumar@algolearn.edu",
+      subject: "Advanced Trees, Heaps & Hashing",
+      avatarInitials: "RK",
+      avatarGradient: "from-blue-600 to-violet-600",
+      description: "Author and instructor covering priority queues and hash collision resolution.",
+      createdAt: "System",
+    },
+    {
+      id: "teacher-meera",
+      name: "Ms. Meera Nair",
+      email: "meera.nair@algolearn.edu",
+      subject: "Recursion, Backtracking & DP",
+      avatarInitials: "MN",
+      avatarGradient: "from-indigo-700 via-indigo-600 to-violet-600",
+      description: "Coach focusing on recursive state trees and optimal subproblem decompositions.",
+      createdAt: "System",
+    },
+  ];
+
+  // TEACHERS API
+  app.get("/api/teachers", (_req, res) => {
+    res.json({ teachers: serverTeachers });
+  });
+
+  app.post("/api/teachers", (req, res) => {
+    const { name, email, subject, description, avatarUrl, avatarInitials, avatarGradient } = req.body;
+    if (!name || !subject) {
+      return res.status(400).json({ error: "Teacher name and subject are required." });
+    }
+
+    const initials =
+      avatarInitials ||
+      name
+        .split(" ")
+        .filter(Boolean)
+        .map((n: string) => n[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase();
+
+    const newTeacher = {
+      id: req.body.id || "teacher-" + Date.now(),
+      name: name.trim(),
+      email: email?.trim() || `${name.toLowerCase().replace(/\s+/g, ".")}@algolearn.edu`,
+      subject: subject.trim(),
+      description: description?.trim() || "",
+      avatarInitials: initials,
+      avatarGradient: avatarGradient || "from-blue-600 via-indigo-600 to-violet-600",
+      avatarUrl: avatarUrl?.trim() || "",
+      createdAt: "Just now",
+    };
+
+    serverTeachers.unshift(newTeacher);
+    res.status(201).json({ teacher: newTeacher });
+  });
+
+  app.put("/api/teachers/:id", (req, res) => {
+    const { id } = req.params;
+    const index = serverTeachers.findIndex((t) => t.id === id);
+    if (index === -1) {
+      return res.status(404).json({ error: "Teacher not found." });
+    }
+
+    serverTeachers[index] = {
+      ...serverTeachers[index],
+      ...req.body,
+    };
+    res.json({ teacher: serverTeachers[index] });
+  });
+
+  app.delete("/api/teachers/:id", (req, res) => {
+    const { id } = req.params;
+    serverTeachers = serverTeachers.filter((t) => t.id !== id);
+    res.json({ success: true, message: "Teacher removed successfully." });
+  });
+
+  // QUESTIONS API
   app.get("/api/questions", (_req, res) => {
     res.json({ questions: serverQuestions });
   });

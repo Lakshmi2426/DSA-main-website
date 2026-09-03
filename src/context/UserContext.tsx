@@ -7,7 +7,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
     id: 'std-101',
     name: 'Alex Mercer',
     email: 'alex.mercer@dev.io',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
     topicsStarted: 12,
     topicsCompleted: 4,
     overallProgress: 68,
@@ -18,8 +18,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
       { id: 'data-structures-and-types', title: 'Data Structure and Types', progress: 100, lastAccessed: 'Today', status: 'completed' },
       { id: 'linear-search', title: 'Linear Search', progress: 100, lastAccessed: 'Yesterday', status: 'completed' },
       { id: 'binary-search', title: 'Binary Search', progress: 85, lastAccessed: 'Today', status: 'in_progress' },
-      { id: 'insertion-sort', title: 'Insertion Sort', progress: 100, lastAccessed: '3 days ago', status: 'completed' },
-      { id: 'bubble-sort', title: 'Bubble Sort', progress: 100, lastAccessed: '4 days ago', status: 'completed' },
+      { id: 'sorting', title: 'Sorting', progress: 100, lastAccessed: '3 days ago', status: 'completed' },
       { id: 'stack', title: 'Stack', progress: 75, lastAccessed: 'Today', status: 'in_progress' },
       { id: 'singly-linked-list', title: 'Singly Linked List (SLL)', progress: 60, lastAccessed: '2 days ago', status: 'in_progress' },
       { id: 'queue', title: 'Queue', progress: 40, lastAccessed: '5 days ago', status: 'in_progress' },
@@ -27,14 +26,14 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
     recentActivities: [
       { id: 'act-1', title: 'Explored Binary Search Midpoint halving', type: 'visualization_run', timestamp: '2 hours ago' },
       { id: 'act-2', title: 'Asked Teacher about Stack vs Queue memory', type: 'teacher_question', timestamp: '4 hours ago' },
-      { id: 'act-3', title: 'Completed Insertion Sort module test', type: 'quiz_completed', timestamp: 'Yesterday' },
+      { id: 'act-3', title: 'Completed Sorting module test', type: 'quiz_completed', timestamp: 'Yesterday' },
     ],
   },
   {
     id: 'std-102',
     name: 'Elena Rostova',
     email: 'elena.rostova@tech.edu',
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
     topicsStarted: 16,
     topicsCompleted: 9,
     overallProgress: 88,
@@ -60,7 +59,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
     id: 'std-103',
     name: 'Marcus Vance',
     email: 'marcus.v@cloudcorp.org',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
     topicsStarted: 7,
     topicsCompleted: 2,
     overallProgress: 34,
@@ -71,7 +70,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
       { id: 'data-structures-and-types', title: 'Data Structure and Types', progress: 100, lastAccessed: 'Yesterday', status: 'completed' },
       { id: 'linear-search', title: 'Linear Search', progress: 100, lastAccessed: '3 days ago', status: 'completed' },
       { id: 'binary-search', title: 'Binary Search', progress: 45, lastAccessed: 'Yesterday', status: 'in_progress' },
-      { id: 'insertion-sort', title: 'Insertion Sort', progress: 20, lastAccessed: '4 days ago', status: 'in_progress' },
+      { id: 'sorting', title: 'Sorting', progress: 20, lastAccessed: '4 days ago', status: 'in_progress' },
     ],
     recentActivities: [
       { id: 'act-6', title: 'Solved Linear Search early exit optimization', type: 'quiz_completed', timestamp: 'Yesterday' },
@@ -81,7 +80,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
     id: 'std-104',
     name: 'Priya Sharma',
     email: 'priya.sharma@algorithmics.in',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
     topicsStarted: 18,
     topicsCompleted: 14,
     overallProgress: 94,
@@ -93,8 +92,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
       { id: 'binary-search', title: 'Binary Search', progress: 100, lastAccessed: '1 week ago', status: 'completed' },
       { id: 'trees', title: 'Trees', progress: 100, lastAccessed: '4 days ago', status: 'completed' },
       { id: 'binary-search-tree', title: 'Binary Search Tree', progress: 100, lastAccessed: '3 days ago', status: 'completed' },
-      { id: 'hashing', title: 'Hashing', progress: 100, lastAccessed: 'Yesterday', status: 'completed' },
-      { id: 'collision-resolution-techniques', title: 'Collision Resolution Techniques', progress: 85, lastAccessed: 'Today', status: 'in_progress' },
+      { id: 'hashing-and-collision-resolution', title: 'Hashing & Collision Resolution', progress: 100, lastAccessed: 'Yesterday', status: 'completed' },
     ],
     recentActivities: [
       { id: 'act-7', title: 'Simulated Quadratic Probing collisions', type: 'visualization_run', timestamp: 'Today, 3:05 PM' },
@@ -105,7 +103,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
     id: 'std-105',
     name: 'David Kim',
     email: 'david.kim@seoulcode.kr',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
     topicsStarted: 9,
     topicsCompleted: 3,
     overallProgress: 48,
@@ -126,7 +124,7 @@ export const INITIAL_STUDENTS: StudentProgressRecord[] = [
     id: 'std-106',
     name: 'Sophia Laurent',
     email: 'sophia.l@sorbonne.fr',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
     topicsStarted: 14,
     topicsCompleted: 8,
     overallProgress: 76,
@@ -222,7 +220,7 @@ const defaultUser: UserProfile = {
   name: 'Alex Mercer',
   username: 'alex_codes',
   email: 'alex.mercer@dev.io',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  avatar: '',
   xp: 2850,
   level: 8,
   streak: 7,
@@ -272,7 +270,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const saved = localStorage.getItem('algolearn_user');
       if (saved) {
         try {
-          return JSON.parse(saved);
+          const parsed = JSON.parse(saved);
+          if (parsed.avatar && parsed.avatar.includes('unsplash.com')) {
+            parsed.avatar = '';
+          }
+          return parsed;
         } catch (e) {
           console.error(e);
         }

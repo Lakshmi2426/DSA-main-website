@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { LEADERBOARD_USERS } from '../../data/leaderboardData';
 import { LeaderboardUser } from '../../types';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const LeaderboardView: React.FC = () => {
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'allTime'>('weekly');
@@ -95,14 +96,12 @@ export const LeaderboardView: React.FC = () => {
                 )}
 
                 <div className="relative mt-2 mb-4">
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 shadow-md">
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-full h-full object-cover rounded-xl"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
+                  <UserAvatar
+                    src={user.avatar}
+                    name={user.name}
+                    size="xl"
+                    className="!w-20 !h-20 !text-xl shadow-md"
+                  />
                   <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-lg bg-slate-900 text-white border border-slate-700 flex items-center justify-center font-mono font-bold text-xs shadow-sm">
                     #{user.rank}
                   </div>
@@ -227,11 +226,11 @@ export const LeaderboardView: React.FC = () => {
                       </td>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <img
+                          <UserAvatar
                             src={user.avatar}
-                            alt={user.name}
-                            className="w-8 h-8 rounded-lg object-cover"
-                            referrerPolicy="no-referrer"
+                            name={user.name}
+                            size="sm"
+                            className="!w-8 !h-8 shrink-0"
                           />
                           <div>
                             <span className="font-bold text-slate-900 dark:text-white">

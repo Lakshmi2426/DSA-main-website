@@ -7,7 +7,7 @@ const INITIAL_QUESTIONS: StudentQuestion[] = [
     id: 'q-101',
     studentId: 'std-101',
     studentName: 'Rahul Sharma',
-    studentAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    studentAvatar: '',
     teacherId: 'teacher-priya',
     teacherName: 'Dr. Priya Sharma',
     teacherSubject: 'Data Structures & Algorithms',
@@ -31,7 +31,7 @@ const INITIAL_QUESTIONS: StudentQuestion[] = [
     id: 'q-102',
     studentId: 'std-102',
     studentName: 'Ananya Patel',
-    studentAvatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    studentAvatar: '',
     teacherId: 'teacher-kavitha',
     teacherName: 'Ms. Kavitha Reddy',
     teacherSubject: 'Linear Data Structures',
@@ -55,7 +55,7 @@ const INITIAL_QUESTIONS: StudentQuestion[] = [
     id: 'q-103',
     studentId: 'std-103',
     studentName: 'Marcus Vance',
-    studentAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    studentAvatar: '',
     teacherId: 'teacher-arjun',
     teacherName: 'Prof. Arjun Mehta',
     teacherSubject: 'Algorithms & Complexity',
@@ -112,7 +112,13 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const saved = localStorage.getItem('algolearn_student_questions');
       if (saved) {
         try {
-          return JSON.parse(saved);
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            return parsed.map((q: StudentQuestion) => ({
+              ...q,
+              studentAvatar: q.studentAvatar && q.studentAvatar.includes('unsplash.com') ? '' : q.studentAvatar,
+            }));
+          }
         } catch (e) {
           console.error(e);
         }

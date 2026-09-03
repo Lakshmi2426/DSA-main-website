@@ -9,11 +9,11 @@ import {
   X,
   Shield,
   KeyRound,
-  MessageCircle,
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
-import { Logo } from '../common/Logo';
+import { BrandLogo } from '../common/BrandLogo';
+import { UserAvatar } from '../common/UserAvatar';
 import { NavigationTab } from '../../types';
 
 interface NavbarProps {
@@ -37,19 +37,15 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems: { id: NavigationTab; label: string; icon?: React.ReactNode }[] = [
+  const navItems: { id: NavigationTab; label: string }[] = [
     { id: 'home', label: 'Home' },
     { id: 'topics', label: 'Topics' },
     { id: 'leaderboard', label: 'Leaderboard' },
-    {
-      id: 'ask-teacher',
-      label: role === 'admin' ? 'Student Questions' : 'Ask a Teacher',
-      icon: <MessageCircle className="w-3.5 h-3.5" />,
-    },
+    { id: 'ask-teacher', label: 'Ask a Teacher' },
     { id: 'about', label: 'About' },
   ];
 
-  // If authenticated as admin, include Admin in the visible tabs
+  // If authenticated as admin, include Admin Dashboard in the visible tabs
   const fullNavItems = (isAuthenticated && role === 'admin')
     ? [...navItems, { id: 'admin' as NavigationTab, label: 'Admin Dashboard' }]
     : navItems;
@@ -71,18 +67,19 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
           : 'bg-white/60 dark:bg-[#05070a]/50 backdrop-blur-sm py-4 border-b border-blue-100/40 dark:border-slate-800/40'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Left: Minimal AlgoLearn Logo */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        {/* Left: Pure AlgoLearn Brand Logo (Rectangular, no circular avatar wrapper, no box, no background) */}
         <button
           onClick={() => {
             setActiveTab('home');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          className="flex items-center group text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg p-0.5 cursor-pointer"
+          className="flex items-center group text-left bg-transparent border-0 shadow-none p-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md shrink-0"
+          style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
           id="nav-logo-btn"
           aria-label="AlgoLearn Home"
         >
-          <Logo />
+          <BrandLogo size="md" />
         </button>
 
         {/* Center: Clean Navigation */}
@@ -105,7 +102,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
               >
                 <span className="flex items-center gap-1.5">
                   {item.id === 'admin' && <Shield className="w-3.5 h-3.5 text-blue-500" />}
-                  {item.icon && item.id !== 'admin' && <span className="opacity-80">{item.icon}</span>}
                   {item.label}
                 </span>
                 {isActive && (
@@ -143,7 +139,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
             </motion.div>
           </button>
 
-          {/* User Auth / Profile */}
+          {/* User Auth / Profile Avatar (Circular, strictly distinct from BrandLogo) */}
           {isAuthenticated ? (
             <div className="relative">
               <button
@@ -152,14 +148,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
                 id="user-menu-btn"
                 aria-label="User Account Menu"
               >
-                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-blue-500/60">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
+                <UserAvatar src={user.avatar} name={user.name} size="sm" />
               </button>
 
               {/* User Dropdown */}
@@ -232,6 +221,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
                           setShowUserMenu(false);
                         }}
                         className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors text-left cursor-pointer"
+                        id="navbar-signout-btn"
                       >
                         <LogOut className="w-4 h-4" />
                         Sign Out
@@ -297,7 +287,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
                 >
                   <span className="flex items-center gap-2">
                     {item.id === 'admin' && <Shield className="w-4 h-4" />}
-                    {item.icon && item.id !== 'admin' && <span>{item.icon}</span>}
                     {item.label}
                   </span>
                 </button>
@@ -309,3 +298,4 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
     </header>
   );
 };
+

@@ -4,6 +4,7 @@ import { MessageCircle } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider, useUser } from './context/UserContext';
 import { QuestionsProvider } from './context/QuestionsContext';
+import { TeachersProvider } from './context/TeachersContext';
 import { AlgorithmBackground } from './components/common/AlgorithmBackground';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -206,9 +207,11 @@ export default function App() {
   return (
     <ThemeProvider>
       <UserProvider>
-        <QuestionsProvider>
-          <MainAppContent />
-        </QuestionsProvider>
+        <TeachersProvider>
+          <QuestionsProvider>
+            <MainAppContent />
+          </QuestionsProvider>
+        </TeachersProvider>
       </UserProvider>
     </ThemeProvider>
   );

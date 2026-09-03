@@ -85,9 +85,13 @@ const TOPIC_THEME_MAP: Record<string, number> = {
   'data-structures-and-types': 0, // Royal Blue
   'linear-search': 4,            // Royal Blue -> Indigo
   'binary-search': 1,            // Indigo
+  'sorting': 2,                  // Royal Blue -> Indigo
+  'hashing-and-collision-resolution': 4, // Royal Blue Dominant to Indigo
   'insertion-sort': 2,           // Royal Blue -> Indigo
   'bubble-sort': 7,              // Royal Blue Fusion
   'selection-sort': 6,           // Deep Navy Royal Blue
+  'hashing': 4,                  // Royal Blue Dominant
+  'collision-resolution-techniques': 5, // Rich Royal Blue & Deep Indigo
   'merge-sort': 3,               // Deep Cobalt Blue
   'quick-sort': 5,               // Rich Royal Blue & Deep Indigo
   'singly-linked-list': 0,       // Royal Blue

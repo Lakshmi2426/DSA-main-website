@@ -2,10 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { DSA_TOPICS } from '../../data/dsaTopics';
 import { DSATopicCard } from './DSATopicCard';
+import { TopicDetailModal } from './TopicDetailModal';
+import { DSATopic } from '../../types';
 
-export const TopicsCatalog: React.FC = () => {
+interface TopicsCatalogProps {
+  onAskTeacher?: (topicTitle: string) => void;
+}
+
+export const TopicsCatalog: React.FC<TopicsCatalogProps> = ({ onAskTeacher }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedTopic, setSelectedTopic] = useState<DSATopic | null>(null);
 
   const categories = ['All', 'Linear', 'Tree & Graph', 'Algorithms'];
 
@@ -40,7 +47,7 @@ export const TopicsCatalog: React.FC = () => {
         <div className="max-w-3xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/90 dark:bg-blue-950/80 border border-blue-200/80 dark:border-blue-800/80 text-blue-700 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
-            <span>18 Essential Modules</span>
+            <span>Curated DSA Modules</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -88,16 +95,24 @@ export const TopicsCatalog: React.FC = () => {
           </div>
         </div>
 
-        {/* 18 TOPIC CARDS GRID */}
+        {/* TOPIC CARDS GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filteredTopics.map((topic, index) => (
             <DSATopicCard
               key={topic.id}
               topic={topic}
               index={index}
+              onSelect={(t) => setSelectedTopic(t)}
             />
           ))}
         </div>
+
+        {/* Topic Detail Modal */}
+        <TopicDetailModal
+          topic={selectedTopic}
+          onClose={() => setSelectedTopic(null)}
+          onAskTeacher={onAskTeacher}
+        />
 
         {/* Empty State */}
         {filteredTopics.length === 0 && (

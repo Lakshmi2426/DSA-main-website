@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
+import { UserAvatar } from '../common/UserAvatar';
 
 export const StudentProfileView: React.FC = () => {
   const { user } = useUser();
@@ -72,14 +73,12 @@ export const StudentProfileView: React.FC = () => {
 
             <div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-5 pt-2">
-                <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-blue-500/40 shadow-md shrink-0">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
+                <UserAvatar
+                  src={user.avatar}
+                  name={user.name}
+                  size="xl"
+                  className="!w-20 !h-20 sm:!w-24 sm:!h-24 !text-2xl sm:!text-3xl shadow-md shrink-0"
+                />
 
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">

@@ -203,7 +203,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Right Form Panel (Col 6-12) */}
         <div className="p-6 sm:p-10 md:col-span-7 flex flex-col justify-between text-left max-h-[90vh] overflow-y-auto">
           <div>
-            <div className="mb-4">
+            <div className="mb-4 bg-transparent border-0 shadow-none p-0">
               <Logo size="sm" />
             </div>
 

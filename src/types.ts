@@ -13,6 +13,15 @@ export type UserRole = 'student' | 'admin';
 
 export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced';
 
+export interface DSATopicSubtopic {
+  id: string;
+  title: string;
+  shortDescription: string;
+  fullDescription?: string;
+  keyOperations?: { name: string; time: string; space: string }[];
+  concepts?: string[];
+}
+
 export interface DSATopic {
   id: string;
   title: string;
@@ -29,6 +38,7 @@ export interface DSATopic {
   iconName: string;
   keyOperations: { name: string; time: string; space: string }[];
   algorithms: string[];
+  subtopics?: DSATopicSubtopic[];
   featuredOnHome?: boolean;
 }
 
@@ -142,9 +152,13 @@ export interface UserProfile {
 export interface Teacher {
   id: string;
   name: string;
+  email?: string;
   subject: string;
   avatarInitials: string;
   avatarGradient: string;
+  avatarUrl?: string;
+  description?: string;
+  createdAt?: string;
 }
 
 export type ConversationStatus = 'Pending' | 'Answered';
