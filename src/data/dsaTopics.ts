@@ -44,6 +44,7 @@ export const DSA_TOPICS: DSATopic[] = [
     bgGradient: 'from-blue-600/10 via-indigo-500/5 to-slate-900/40',
     iconName: 'Search',
     featuredOnHome: true,
+    gameUrl: 'https://linearsearchfinsl.vercel.app/',
     keyOperations: [
       { name: 'Best Case Match', time: 'O(1)', space: 'O(1)' },
       { name: 'Average Case Search', time: 'O(N)', space: 'O(1)' },
@@ -183,6 +184,7 @@ export const DSA_TOPICS: DSATopic[] = [
     bgGradient: 'from-blue-600/10 via-indigo-500/5 to-slate-900/40',
     iconName: 'Layers',
     featuredOnHome: true,
+    gameUrl: 'https://algolearnstack.vercel.app',
     keyOperations: [
       { name: 'Push Element', time: 'O(1)', space: 'O(1)' },
       { name: 'Pop Element', time: 'O(1)', space: 'O(1)' },
@@ -463,6 +465,7 @@ export const DSA_TOPICS: DSATopic[] = [
     bgGradient: 'from-blue-600/10 via-indigo-500/5 to-slate-900/40',
     iconName: 'Hash',
     featuredOnHome: true,
+    gameUrl: 'https://hashing-final.vercel.app',
     keyOperations: [
       { name: 'Average Lookup / Insert', time: 'O(1)', space: 'O(1)' },
       { name: 'Separate Chaining (Avg)', time: 'O(1 + α)', space: 'O(N)' },

@@ -65,7 +65,7 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
     await sendAnswer({
       questionId: selectedQuestion.id,
       answer: answerText.trim(),
-      teacherName: user.name || 'Instructor',
+      teacherName: user.name && user.name.trim() ? user.name : (selectedQuestion.teacherName || 'Instructor'),
     });
 
     setIsSubmitting(false);
@@ -124,7 +124,7 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Student: {selectedQuestion.studentName}</span>
                   <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold border ${
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
                       selectedQuestion.status === 'Answered'
                         ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/30'
                         : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-500/30'
@@ -133,7 +133,7 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
                     {selectedQuestion.status}
                   </span>
                 </h2>
-                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                   <span className="flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400">
                     <BookOpen className="w-3 h-3" /> Topic: {selectedQuestion.topicTitle}
                   </span>
@@ -159,7 +159,7 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
                     <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-sans">
                       {isStudent ? `Student: ${msg.senderName}` : `Teacher: ${msg.senderName}`}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono">{msg.createdAt}</span>
+                    <span className="text-[10px] text-slate-400">{msg.createdAt}</span>
                   </div>
 
                   <div
@@ -186,7 +186,7 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
             )}
 
             <form onSubmit={handleSendAnswer} className="space-y-3">
-              <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Reply as {user.name || 'Teacher'}
               </label>
               <textarea
@@ -201,7 +201,7 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
               />
 
               <div className="flex items-center justify-between">
-                <p className="text-[11px] text-slate-400 font-mono">
+                <p className="text-[11px] text-slate-400">
                   Press Enter to send · Shift + Enter for new line
                 </p>
 
@@ -295,12 +295,12 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
                         <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                           Student: {q.studentName}
                         </h3>
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 font-semibold flex items-center gap-1">
+                        <span className="text-[11px] px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 font-semibold flex items-center gap-1">
                           <BookOpen className="w-3 h-3" />
                           Topic: {q.topicTitle}
                         </span>
                         <span
-                          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                             q.status === 'Answered'
                               ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/30'
                               : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-500/30'
@@ -315,7 +315,7 @@ export const AdminTeacherQuestionsView: React.FC<AdminTeacherQuestionsViewProps>
                         "{firstStudentMsg}"
                       </p>
 
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono flex items-center gap-3 flex-wrap">
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-3 flex-wrap">
                         <span className="font-semibold text-slate-700 dark:text-slate-300">
                           Asked to: {q.teacherName}
                         </span>

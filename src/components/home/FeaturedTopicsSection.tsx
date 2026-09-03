@@ -15,8 +15,8 @@ export const FeaturedTopicsSection: React.FC<FeaturedTopicsSectionProps> = ({
 }) => {
   const [selectedTopic, setSelectedTopic] = useState<DSATopic | null>(null);
 
-  // Home page featured topics (Data Structures, Sorting, Stack, Hashing, etc.)
-  const featuredTopics = DSA_TOPICS.filter((t) => t.featuredOnHome);
+  // Home page preview: exactly 4 featured topic cards
+  const featuredTopics = DSA_TOPICS.filter((t) => t.featuredOnHome).slice(0, 4);
 
   return (
     <section className="relative py-16 bg-transparent" id="explore-topics-section">
@@ -57,7 +57,14 @@ export const FeaturedTopicsSection: React.FC<FeaturedTopicsSectionProps> = ({
               key={topic.id}
               topic={topic}
               index={index}
-              onSelect={(t) => setSelectedTopic(t)}
+              onSelect={(t) => {
+                const destination = t.gameUrl || t.externalUrl;
+                if (destination) {
+                  window.open(destination, '_blank', 'noopener,noreferrer');
+                  return;
+                }
+                setSelectedTopic(t);
+              }}
             />
           ))}
         </div>

@@ -100,6 +100,7 @@ interface QuestionsContextType {
     answer: string;
     teacherName?: string;
   }) => Promise<void>;
+  clearConversation: (questionId: string, studentId?: string) => Promise<void>;
   getStudentQuestions: () => StudentQuestion[];
 }
 
@@ -232,7 +233,7 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             conversationId: q.id,
             senderId: q.teacherId,
             senderRole: 'teacher',
-            senderName: params.teacherName || q.teacherName,
+            senderName: params.teacherName || (user.name && user.name !== 'System Administrator' ? user.name : q.teacherName) || user.name,
             message: params.answer,
             createdAt: timeStr,
           };
@@ -254,11 +255,40 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           answer: params.answer,
-          teacherName: params.teacherName,
+          teacherName: params.teacherName || (user.name && user.name !== 'System Administrator' ? user.name : undefined),
         }),
       });
     } catch (e) {
       console.log('Answer saved to local storage fallback');
+    }
+  };
+
+  const clearConversation = async (questionId: string, studentId?: string): Promise<void> => {
+    const targetQ = questions.find((q) => q.id === questionId);
+    if (!targetQ) return;
+
+    // Validate ownership: student can only clear their own conversation
+    const effectiveStudentId = studentId || user.id;
+    const isOwner =
+      targetQ.studentId === effectiveStudentId ||
+      targetQ.studentName === user.name ||
+      targetQ.studentId === 'std-current';
+
+    if (!isOwner) {
+      console.warn('Unauthorized clearConversation: student does not own this conversation');
+      return;
+    }
+
+    // Immediately remove from visible questions
+    setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+
+    try {
+      await fetch(
+        `/api/questions/${questionId}?studentId=${encodeURIComponent(effectiveStudentId)}&studentName=${encodeURIComponent(user.name)}`,
+        { method: 'DELETE' }
+      );
+    } catch (e) {
+      console.log('Cleared from local storage fallback');
     }
   };
 
@@ -273,6 +303,7 @@ export const QuestionsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         questions,
         sendQuestion,
         sendAnswer,
+        clearConversation,
         getStudentQuestions,
       }}
     >

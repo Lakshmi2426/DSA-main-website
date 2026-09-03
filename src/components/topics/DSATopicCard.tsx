@@ -144,6 +144,15 @@ export const DSATopicCard: React.FC<DSATopicCardProps> = ({
     circumference - (topic.progress / 100) * circumference;
 
   const categoryLabel = getCategoryLabel(topic.category);
+  const externalDestination = topic.gameUrl || topic.externalUrl;
+
+  const handleCardClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (externalDestination) {
+      window.open(externalDestination, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    onSelect(topic);
+  };
 
   return (
     <motion.div
@@ -151,8 +160,21 @@ export const DSATopicCard: React.FC<DSATopicCardProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, delay: index * 0.02 }}
       whileHover={{ y: -3 }}
-      onClick={() => onSelect(topic)}
-      className="group relative rounded-2xl p-[1px] bg-gradient-to-b from-[#D8E2F5] to-[#C4D0E8] hover:from-blue-500 hover:to-indigo-500 dark:from-[#243554]/80 dark:to-[#1a2640]/60 dark:hover:from-blue-500/70 dark:hover:to-indigo-500/70 transition-all duration-200 select-none cursor-pointer text-left h-full"
+      onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick(e);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={
+        externalDestination
+          ? `Play ${topic.title} interactive game`
+          : `View ${topic.title} details`
+      }
+      className="group relative rounded-2xl p-[1px] bg-gradient-to-b from-[#D8E2F5] to-[#C4D0E8] hover:from-blue-500 hover:to-indigo-500 dark:from-[#243554]/80 dark:to-[#1a2640]/60 dark:hover:from-blue-500/70 dark:hover:to-indigo-500/70 transition-all duration-200 select-none cursor-pointer text-left h-full focus:outline-none focus:ring-2 focus:ring-blue-500/50"
       id={`topic-card-${topic.id}`}
     >
       <div className="bg-white dark:bg-[#0B1224] rounded-[15px] p-5 h-full flex flex-col relative overflow-hidden transition-colors duration-200">

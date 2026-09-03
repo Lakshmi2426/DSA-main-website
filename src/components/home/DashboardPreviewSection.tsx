@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import { NavigationTab } from '../../types';
+import { UserAvatar } from '../common/UserAvatar';
 
 interface DashboardPreviewSectionProps {
   setActiveTab: (tab: NavigationTab) => void;
@@ -52,14 +53,11 @@ export const DashboardPreviewSection: React.FC<DashboardPreviewSectionProps> = (
               {/* User banner */}
               <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-blue-50/70 dark:bg-slate-800/60 border border-blue-200/85 dark:border-slate-700">
                 <div className="flex items-center gap-3.5">
-                  <div className="relative w-12 h-12 rounded-full border-2 border-blue-500 p-0.5 overflow-hidden shadow-xs">
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-full h-full object-cover rounded-full"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
+                  <UserAvatar
+                    src={user.avatar}
+                    name={user.name}
+                    size="lg"
+                  />
                   <div>
                     <h3 className="font-bold text-slate-900 dark:text-white text-base">
                       {user.name}

@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Trophy, Flame, Zap, ArrowRight, ShieldCheck, Crown } from 'lucide-react';
 import { LEADERBOARD_USERS } from '../../data/leaderboardData';
 import { NavigationTab } from '../../types';
+import { UserAvatar } from '../common/UserAvatar';
 
 interface LeaderboardPreviewSectionProps {
   setActiveTab: (tab: NavigationTab) => void;
@@ -116,16 +117,12 @@ export const LeaderboardPreviewSection: React.FC<LeaderboardPreviewSectionProps>
 
                 {/* Avatar with rank badge */}
                 <div className="relative mt-2 mb-4">
-                  <div
-                    className={`w-20 h-20 rounded-2xl overflow-hidden p-1 bg-gradient-to-tr ${badge.color} shadow-md`}
-                  >
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-full h-full object-cover rounded-xl"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
+                  <UserAvatar
+                    src={user.avatar}
+                    name={user.name}
+                    size="2xl"
+                    className="shadow-md"
+                  />
                   <div
                     className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-lg ${badge.bg} ${badge.border} border flex items-center justify-center font-mono font-bold text-xs ${badge.text} shadow-sm backdrop-blur`}
                   >
@@ -181,11 +178,10 @@ export const LeaderboardPreviewSection: React.FC<LeaderboardPreviewSectionProps>
                 #{currentUser.rank}
               </span>
               <div className="flex items-center gap-2.5">
-                <img
+                <UserAvatar
                   src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-9 h-9 rounded-lg object-cover"
-                  referrerPolicy="no-referrer"
+                  name={currentUser.name}
+                  size="sm"
                 />
                 <div>
                   <span className="font-bold text-slate-900 dark:text-white text-sm">

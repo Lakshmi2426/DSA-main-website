@@ -312,6 +312,25 @@ async function startServer() {
     res.json({ question });
   });
 
+  app.delete("/api/questions/:id", (req, res) => {
+    const { id } = req.params;
+    const { studentId, studentName } = req.query;
+    const index = serverQuestions.findIndex((q) => q.id === id);
+    if (index !== -1) {
+      const q = serverQuestions[index];
+      if (
+        !studentId ||
+        q.studentId === studentId ||
+        (studentName && q.studentName === studentName) ||
+        q.studentId === "std-current"
+      ) {
+        serverQuestions.splice(index, 1);
+        return res.json({ success: true, message: "Conversation cleared successfully." });
+      }
+    }
+    res.json({ success: true });
+  });
+
   // ============================================================
   // AI CHAT
   // ============================================================

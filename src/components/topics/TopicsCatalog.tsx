@@ -102,7 +102,14 @@ export const TopicsCatalog: React.FC<TopicsCatalogProps> = ({ onAskTeacher }) =>
               key={topic.id}
               topic={topic}
               index={index}
-              onSelect={(t) => setSelectedTopic(t)}
+              onSelect={(t) => {
+                const destination = t.gameUrl || t.externalUrl;
+                if (destination) {
+                  window.open(destination, '_blank', 'noopener,noreferrer');
+                  return;
+                }
+                setSelectedTopic(t);
+              }}
             />
           ))}
         </div>

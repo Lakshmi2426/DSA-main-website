@@ -99,8 +99,8 @@ export const LeaderboardView: React.FC = () => {
                   <UserAvatar
                     src={user.avatar}
                     name={user.name}
-                    size="xl"
-                    className="!w-20 !h-20 !text-xl shadow-md"
+                    size="2xl"
+                    className="shadow-md"
                   />
                   <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-lg bg-slate-900 text-white border border-slate-700 flex items-center justify-center font-mono font-bold text-xs shadow-sm">
                     #{user.rank}

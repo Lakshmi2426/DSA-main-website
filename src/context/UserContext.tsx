@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { UserProfile, AchievementBadge, StudentProgressRecord, UserRole } from '../types';
+import { TEACHERS } from '../data/teachersData';
 
 export const INITIAL_STUDENTS: StudentProgressRecord[] = [
   {
@@ -151,7 +152,7 @@ interface UserContextType {
   markTopicProgress: (topicId: string, progress: number) => void;
   solveProblem: (problemName: string, xpReward?: number) => void;
   login: (email: string, name?: string) => void;
-  loginAsAdmin: (email: string, adminCode: string) => { success: boolean; message?: string };
+  loginAsAdmin: (email: string, adminCode: string, name?: string) => { success: boolean; message?: string };
   logout: () => void;
   showAuthModal: boolean;
   setShowAuthModal: (show: boolean) => void;
@@ -386,7 +387,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setShowAuthModal(false);
   };
 
-  const loginAsAdmin = (email: string, adminCode: string): { success: boolean; message?: string } => {
+  const loginAsAdmin = (
+    email: string,
+    adminCode: string,
+    staffName?: string
+  ): { success: boolean; message?: string } => {
     const trimmedCode = adminCode.trim().toUpperCase();
 
     if (trimmedCode !== 'ADMIN2026') {
@@ -396,13 +401,53 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     }
 
+    // Determine the real authenticated admin/teacher name
+    let resolvedName = staffName?.trim();
+
+    if (!resolvedName && email) {
+      const emailLower = email.trim().toLowerCase();
+      // Check against known faculty in TEACHERS catalog
+      const matchedTeacher = TEACHERS.find(
+        (t) =>
+          t.email.toLowerCase() === emailLower ||
+          t.name.toLowerCase() === emailLower
+      );
+      if (matchedTeacher) {
+        resolvedName = matchedTeacher.name;
+      } else {
+        const prefix = emailLower.split('@')[0];
+        if (prefix.includes('priya')) {
+          resolvedName = 'Dr. Priya Sharma';
+        } else if (prefix.includes('arjun')) {
+          resolvedName = 'Prof. Arjun Mehta';
+        } else if (prefix.includes('kavitha')) {
+          resolvedName = 'Ms. Kavitha Reddy';
+        } else if (prefix.includes('ravi')) {
+          resolvedName = 'Dr. Ravi Kumar';
+        } else if (prefix.includes('meera')) {
+          resolvedName = 'Ms. Meera Nair';
+        } else {
+          resolvedName = prefix
+            .replace(/[._-]/g, ' ')
+            .split(' ')
+            .filter(Boolean)
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+            .join(' ');
+        }
+      }
+    }
+
+    if (!resolvedName) {
+      resolvedName = 'System Administrator';
+    }
+
     setIsAuthenticated(true);
     setRole('admin');
     setUser((prev) => ({
       ...prev,
       email: email || 'admin@algolearn.edu',
-      name: 'System Administrator',
-      username: 'admin_root',
+      name: resolvedName,
+      username: email ? email.split('@')[0].toLowerCase() : 'admin_staff',
     }));
     setShowAuthModal(false);
     return { success: true };

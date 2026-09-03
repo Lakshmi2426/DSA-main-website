@@ -40,6 +40,8 @@ export interface DSATopic {
   algorithms: string[];
   subtopics?: DSATopicSubtopic[];
   featuredOnHome?: boolean;
+  gameUrl?: string;
+  externalUrl?: string;
 }
 
 export interface StudentProgressRecord {
