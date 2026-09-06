@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   Trophy,
@@ -14,25 +14,61 @@ import {
 import { LEADERBOARD_USERS } from '../../data/leaderboardData';
 import { LeaderboardUser } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
+import { useUser } from '../../context/UserContext';
 
 export const LeaderboardView: React.FC = () => {
+  const { user: currentUser, isAuthenticated } = useUser();
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly' | 'allTime'>('weekly');
   const [selectedTier, setSelectedTier] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [leaderboardUsers, setLeaderboardUsers] = useState<LeaderboardUser[]>(LEADERBOARD_USERS);
+
+  useEffect(() => {
+    fetch('/api/leaderboard')
+      .then((res) => {
+        if (!res.ok) throw new Error('API not available');
+        return res.json();
+      })
+      .then((data) => {
+        if (data?.leaderboard && Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
+          setLeaderboardUsers(data.leaderboard);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const tiers = ['All', 'Grandmaster', 'Master', 'Diamond', 'Platinum', 'Gold'];
 
+  const effectiveLeaderboard = useMemo(() => {
+    return leaderboardUsers.map((u) => {
+      if (u.isCurrentUser || u.id === 'usr-9428') {
+        const isAuth = isAuthenticated && currentUser.name;
+        return {
+          ...u,
+          name: isAuth ? `${currentUser.name} (You)` : u.name,
+          username: isAuth ? currentUser.username : u.username,
+          avatar: isAuth ? (currentUser.avatar || '') : u.avatar,
+          xp: isAuth ? currentUser.xp : u.xp,
+          streak: isAuth ? currentUser.streak : u.streak,
+          regdNo: isAuth ? (currentUser.regdNo || u.regdNo) : u.regdNo,
+        };
+      }
+      return u;
+    });
+  }, [leaderboardUsers, currentUser, isAuthenticated]);
+
   const filteredUsers = useMemo(() => {
-    return LEADERBOARD_USERS.filter((user) => {
+    return effectiveLeaderboard.filter((user) => {
       const matchesSearch =
         user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.username.toLowerCase().includes(searchQuery.toLowerCase());
+        user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (user.regdNo && user.regdNo.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesTier = selectedTier === 'All' || user.tier === selectedTier;
       return matchesSearch && matchesTier;
     });
-  }, [searchQuery, selectedTier]);
+  }, [effectiveLeaderboard, searchQuery, selectedTier]);
 
-  const topThree = LEADERBOARD_USERS.slice(0, 3);
+  const topThree = effectiveLeaderboard.slice(0, 3);
 
   const getTierColor = (tier: string) => {
     switch (tier) {
@@ -107,12 +143,17 @@ export const LeaderboardView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 mb-1">
+                <div className="flex items-center gap-1.5 mb-0.5">
                   <span className="text-base font-bold text-slate-900 dark:text-white">
                     {user.name}
                   </span>
                   <span>{user.countryCode}</span>
                 </div>
+                {user.regdNo && (
+                  <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 mb-1">
+                    Regd No: {user.regdNo}
+                  </span>
+                )}
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                   @{user.username}
                 </span>
@@ -233,12 +274,19 @@ export const LeaderboardView: React.FC = () => {
                             className="!w-8 !h-8 shrink-0"
                           />
                           <div>
-                            <span className="font-bold text-slate-900 dark:text-white">
-                              {user.name}
-                            </span>
-                            <span className="text-xs text-slate-400 font-mono ml-2">
-                              @{user.username} {user.countryCode}
-                            </span>
+                            <div className="flex items-center">
+                              <span className="font-bold text-slate-900 dark:text-white">
+                                {user.name}
+                              </span>
+                              <span className="text-xs text-slate-400 font-mono ml-2">
+                                @{user.username} {user.countryCode}
+                              </span>
+                            </div>
+                            {user.regdNo && (
+                              <div className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                                Regd No: {user.regdNo}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>

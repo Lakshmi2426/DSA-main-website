@@ -49,6 +49,7 @@ export interface StudentProgressRecord {
   name: string;
   email: string;
   avatar: string;
+  regdNo?: string;
   topicsStarted: number;
   topicsCompleted: number;
   overallProgress: number; // percentage
@@ -113,6 +114,7 @@ export interface LeaderboardUser {
   solvedCount: number;
   badgeTitle: string;
   isCurrentUser?: boolean;
+  regdNo?: string;
 }
 
 export interface AchievementBadge {
@@ -131,6 +133,7 @@ export interface UserProfile {
   username: string;
   email: string;
   avatar: string;
+  regdNo?: string;
   xp: number;
   level: number;
   streak: number;

@@ -332,6 +332,254 @@ async function startServer() {
   });
 
   // ============================================================
+  // STUDENTS & LEADERBOARD STORE
+  // ============================================================
+
+  interface ServerStudent {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string;
+    regdNo?: string;
+    password?: string;
+    createdAt: string;
+  }
+
+  let serverStudents: ServerStudent[] = [
+    {
+      id: "std-101",
+      name: "Alex Mercer",
+      email: "alex.mercer@dev.io",
+      avatar: "",
+      createdAt: "System",
+    },
+    {
+      id: "std-102",
+      name: "Elena Rostova",
+      email: "elena.rostova@tech.edu",
+      avatar: "",
+      createdAt: "System",
+    },
+    {
+      id: "std-103",
+      name: "Marcus Vance",
+      email: "marcus.v@cloudcorp.org",
+      avatar: "",
+      createdAt: "System",
+    },
+    {
+      id: "std-104",
+      name: "Priya Sharma",
+      email: "priya.sharma@algorithmics.in",
+      avatar: "",
+      createdAt: "System",
+    },
+    {
+      id: "std-105",
+      name: "David Kim",
+      email: "david.kim@seoulcode.kr",
+      avatar: "",
+      createdAt: "System",
+    },
+    {
+      id: "std-106",
+      name: "Sophia Laurent",
+      email: "sophia.l@sorbonne.fr",
+      avatar: "",
+      createdAt: "System",
+    },
+  ];
+
+  let serverLeaderboard: any[] = [
+    {
+      rank: 1,
+      id: "usr-101",
+      name: "Elena Rostova",
+      username: "elena_graphmaster",
+      avatar: "",
+      xp: 14280,
+      streak: 48,
+      level: 28,
+      tier: "Grandmaster",
+      countryCode: "🇨🇭",
+      solvedCount: 312,
+      badgeTitle: "Graph Theory Titan",
+    },
+    {
+      rank: 2,
+      id: "usr-102",
+      name: "Kenji Takahashi",
+      username: "kenji_dp_wizard",
+      avatar: "",
+      xp: 12950,
+      streak: 35,
+      level: 26,
+      tier: "Grandmaster",
+      countryCode: "🇯🇵",
+      solvedCount: 284,
+      badgeTitle: "DP Bitmask King",
+    },
+    {
+      rank: 3,
+      id: "usr-103",
+      name: "Sophia Chen",
+      username: "sophia_treehugger",
+      avatar: "",
+      xp: 11840,
+      streak: 29,
+      level: 24,
+      tier: "Master",
+      countryCode: "🇸🇬",
+      solvedCount: 260,
+      badgeTitle: "AVL Balancing Sage",
+    },
+    {
+      rank: 4,
+      id: "usr-104",
+      name: "Marcus Vance",
+      username: "marcus_v",
+      avatar: "",
+      xp: 9420,
+      streak: 18,
+      level: 20,
+      tier: "Diamond",
+      countryCode: "🇺🇸",
+      solvedCount: 198,
+      badgeTitle: "Sliding Window Pro",
+    },
+    {
+      rank: 5,
+      id: "usr-105",
+      name: "Amina Al-Mansoor",
+      username: "amina_code",
+      avatar: "",
+      xp: 8870,
+      streak: 21,
+      level: 19,
+      tier: "Diamond",
+      countryCode: "🇦🇪",
+      solvedCount: 182,
+      badgeTitle: "Trie Architect",
+    },
+    {
+      rank: 6,
+      id: "usr-106",
+      name: "Liam O'Connor",
+      username: "liam_fast_sort",
+      avatar: "",
+      xp: 7920,
+      streak: 14,
+      level: 17,
+      tier: "Platinum",
+      countryCode: "🇮🇪",
+      solvedCount: 164,
+      badgeTitle: "QuickSort Specialist",
+    },
+    {
+      rank: 7,
+      id: "usr-107",
+      name: "Priya Sharma",
+      username: "priya_recursive",
+      avatar: "",
+      xp: 6850,
+      streak: 12,
+      level: 15,
+      tier: "Platinum",
+      countryCode: "🇮🇳",
+      solvedCount: 142,
+      badgeTitle: "Backtrack Explorer",
+    },
+    {
+      rank: 8,
+      id: "usr-9428",
+      name: "Alex Mercer (You)",
+      username: "alex_codes",
+      avatar: "",
+      xp: 2850,
+      streak: 7,
+      level: 8,
+      tier: "Gold",
+      countryCode: "🌐",
+      solvedCount: 42,
+      badgeTitle: "Rising Star",
+      isCurrentUser: true,
+    },
+  ];
+
+  // STUDENTS API
+  app.get("/api/students", (_req, res) => {
+    res.json({ students: serverStudents });
+  });
+
+  app.post("/api/students", (req, res) => {
+    const { name, email, regdNo, password } = req.body;
+    
+    if (!regdNo || typeof regdNo !== "string") {
+      return res.status(400).json({ error: "Regd No. is required." });
+    }
+
+    const trimmedRegd = regdNo.trim();
+    const regdRegex = /^[A-Za-z0-9]{10}$/;
+
+    if (!regdRegex.test(trimmedRegd)) {
+      return res.status(400).json({
+        error: "Regd No. must be exactly 10 characters and contain only letters and numbers.",
+      });
+    }
+
+    // Uniqueness check: No two student accounts can share the same Regd No. (case-insensitive)
+    const duplicate = serverStudents.find(
+      (s) => s.regdNo && s.regdNo.toUpperCase() === trimmedRegd.toUpperCase()
+    );
+    if (duplicate) {
+      return res.status(400).json({
+        error: "Registration Number is already registered to another student account.",
+      });
+    }
+
+    const studentName = name?.trim() || "Algo Learner";
+    const studentEmail = email?.trim().toLowerCase() || `${trimmedRegd.toLowerCase()}@algolearn.edu`;
+
+    const newStudent: ServerStudent = {
+      id: "std-" + Date.now(),
+      name: studentName,
+      email: studentEmail,
+      avatar: "",
+      regdNo: trimmedRegd,
+      password: password || "",
+      createdAt: "Just now",
+    };
+
+    serverStudents.unshift(newStudent);
+
+    // Dynamically update current student slot in serverLeaderboard
+    const currentUserEntry = serverLeaderboard.find((u) => u.isCurrentUser || u.id === "usr-9428");
+    if (currentUserEntry) {
+      currentUserEntry.name = studentName;
+      currentUserEntry.username = studentEmail.split("@")[0] || trimmedRegd.toLowerCase();
+      currentUserEntry.regdNo = trimmedRegd;
+    }
+
+    res.status(201).json({ student: newStudent });
+  });
+
+  // LEADERBOARD API
+  app.get("/api/leaderboard", (_req, res) => {
+    res.json({ leaderboard: serverLeaderboard });
+  });
+
+  app.post("/api/leaderboard/sync", (req, res) => {
+    const { studentName, regdNo, xp } = req.body;
+    const currentUserEntry = serverLeaderboard.find((u) => u.isCurrentUser || u.id === "usr-9428");
+    if (currentUserEntry) {
+      if (studentName) currentUserEntry.name = studentName;
+      if (regdNo) currentUserEntry.regdNo = regdNo.trim();
+      if (xp !== undefined) currentUserEntry.xp = xp;
+    }
+    res.json({ leaderboard: serverLeaderboard });
+  });
+
+  // ============================================================
   // AI CHAT
   // ============================================================
 

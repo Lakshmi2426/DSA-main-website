@@ -2,8 +2,9 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Trophy, Flame, Zap, ArrowRight, ShieldCheck, Crown } from 'lucide-react';
 import { LEADERBOARD_USERS } from '../../data/leaderboardData';
-import { NavigationTab } from '../../types';
+import { NavigationTab, LeaderboardUser } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
+import { useUser } from '../../context/UserContext';
 
 interface LeaderboardPreviewSectionProps {
   setActiveTab: (tab: NavigationTab) => void;
@@ -12,8 +13,43 @@ interface LeaderboardPreviewSectionProps {
 export const LeaderboardPreviewSection: React.FC<LeaderboardPreviewSectionProps> = ({
   setActiveTab,
 }) => {
-  const topThree = LEADERBOARD_USERS.slice(0, 3);
-  const currentUser = LEADERBOARD_USERS.find((u) => u.isCurrentUser);
+  const { user: authUser, isAuthenticated } = useUser();
+  const [leaderboardUsers, setLeaderboardUsers] = React.useState<LeaderboardUser[]>(LEADERBOARD_USERS);
+
+  React.useEffect(() => {
+    fetch('/api/leaderboard')
+      .then((res) => {
+        if (!res.ok) throw new Error('API not available');
+        return res.json();
+      })
+      .then((data) => {
+        if (data?.leaderboard && Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
+          setLeaderboardUsers(data.leaderboard);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const effectiveLeaderboard = React.useMemo(() => {
+    return leaderboardUsers.map((u) => {
+      if (u.isCurrentUser || u.id === 'usr-9428') {
+        const isAuth = isAuthenticated && authUser.name;
+        return {
+          ...u,
+          name: isAuth ? `${authUser.name} (You)` : u.name,
+          username: isAuth ? authUser.username : u.username,
+          avatar: isAuth ? (authUser.avatar || '') : u.avatar,
+          xp: isAuth ? authUser.xp : u.xp,
+          streak: isAuth ? authUser.streak : u.streak,
+          regdNo: isAuth ? (authUser.regdNo || u.regdNo) : u.regdNo,
+        };
+      }
+      return u;
+    });
+  }, [leaderboardUsers, authUser, isAuthenticated]);
+
+  const topThree = effectiveLeaderboard.slice(0, 3);
+  const currentUser = effectiveLeaderboard.find((u) => u.isCurrentUser);
 
   const getPodiumBadge = (rank: number) => {
     switch (rank) {
@@ -130,12 +166,17 @@ export const LeaderboardPreviewSection: React.FC<LeaderboardPreviewSectionProps>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 mb-1">
+                <div className="flex items-center gap-1.5 mb-0.5">
                   <span className="text-base font-bold text-slate-900 dark:text-white">
                     {user.name}
                   </span>
                   <span>{user.countryCode}</span>
                 </div>
+                {user.regdNo && (
+                  <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 mb-1">
+                    Regd No: {user.regdNo}
+                  </span>
+                )}
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                   @{user.username}
                 </span>
@@ -184,12 +225,19 @@ export const LeaderboardPreviewSection: React.FC<LeaderboardPreviewSectionProps>
                   size="sm"
                 />
                 <div>
-                  <span className="font-bold text-slate-900 dark:text-white text-sm">
-                    {currentUser.name}
-                  </span>
-                  <span className="text-xs text-blue-600 dark:text-blue-300 font-mono ml-2">
-                    {currentUser.badgeTitle}
-                  </span>
+                  <div className="flex items-center">
+                    <span className="font-bold text-slate-900 dark:text-white text-sm">
+                      {currentUser.name}
+                    </span>
+                    <span className="text-xs text-blue-600 dark:text-blue-300 font-mono ml-2">
+                      {currentUser.badgeTitle}
+                    </span>
+                  </div>
+                  {currentUser.regdNo && (
+                    <div className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                      Regd No: {currentUser.regdNo}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

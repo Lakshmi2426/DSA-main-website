@@ -151,7 +151,14 @@ interface UserContextType {
   addXP: (amount: number, reason?: string) => void;
   markTopicProgress: (topicId: string, progress: number) => void;
   solveProblem: (problemName: string, xpReward?: number) => void;
-  login: (email: string, name?: string) => void;
+  login: (emailOrRegdNo: string, name?: string, regdNo?: string) => void;
+  registerStudent: (data: {
+    name: string;
+    regdNo: string;
+    email: string;
+    password?: string;
+  }) => Promise<{ success: boolean; message?: string }>;
+  isRegdNoTaken: (regdNo: string, currentEmail?: string) => boolean;
   loginAsAdmin: (email: string, adminCode: string, name?: string) => { success: boolean; message?: string };
   logout: () => void;
   showAuthModal: boolean;
@@ -294,8 +301,77 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return 'student';
   });
 
-  const [studentsList] = useState<StudentProgressRecord[]>(INITIAL_STUDENTS);
-  
+  const [registeredStudents, setRegisteredStudents] = useState<StudentProgressRecord[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('algolearn_registered_students');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    return INITIAL_STUDENTS;
+  });
+
+  // Sync registered students from server API on mount
+  useEffect(() => {
+    fetch('/api/students')
+      .then((res) => {
+        if (!res.ok) throw new Error('API not available');
+        return res.json();
+      })
+      .then((data) => {
+        if (data?.students && Array.isArray(data.students) && data.students.length > 0) {
+          setRegisteredStudents((prev) => {
+            const map = new Map<string, StudentProgressRecord>();
+            prev.forEach((s) => map.set(s.id, s));
+            data.students.forEach((s: any) => {
+              const existing = map.get(s.id);
+              if (existing) {
+                map.set(s.id, { ...existing, ...s });
+              } else {
+                map.set(s.id, {
+                  id: s.id,
+                  name: s.name,
+                  email: s.email,
+                  avatar: s.avatar || '',
+                  regdNo: s.regdNo,
+                  topicsStarted: 0,
+                  topicsCompleted: 0,
+                  overallProgress: 0,
+                  lastActive: 'Just now',
+                  streak: 1,
+                  currentStage: 'Phase 1: Foundations',
+                  exploredTopics: [],
+                  recentActivities: [],
+                });
+              }
+            });
+            const merged = Array.from(map.values());
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('algolearn_registered_students', JSON.stringify(merged));
+            }
+            return merged;
+          });
+        }
+      })
+      .catch(() => {
+        // Fallback to local storage
+      });
+  }, []);
+
+  // Save registered students whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('algolearn_registered_students', JSON.stringify(registeredStudents));
+    }
+  }, [registeredStudents]);
+
   // Fresh visitor must be logged out unless explicit valid session exists
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -375,16 +451,137 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     triggerConfetti();
   };
 
-  const login = (email: string, name = 'Algo Learner') => {
+  const isRegdNoTaken = (regdNo: string, currentEmail?: string): boolean => {
+    const trimmed = regdNo.trim().toUpperCase();
+    if (!trimmed) return false;
+    return registeredStudents.some(
+      (s) =>
+        s.regdNo &&
+        s.regdNo.toUpperCase() === trimmed &&
+        (!currentEmail || s.email.toLowerCase() !== currentEmail.toLowerCase())
+    );
+  };
+
+  const login = (emailOrRegdNo: string, name?: string, regdNo?: string) => {
     setIsAuthenticated(true);
     setRole('student');
+
+    const trimmedInput = emailOrRegdNo.trim();
+    // Check against registered students
+    const matched = registeredStudents.find(
+      (s) =>
+        s.email.toLowerCase() === trimmedInput.toLowerCase() ||
+        (s.regdNo && s.regdNo.toUpperCase() === trimmedInput.toUpperCase())
+    );
+
+    const resolvedRegdNo = regdNo || matched?.regdNo || undefined;
+    const resolvedEmail = matched?.email || (trimmedInput.includes('@') ? trimmedInput : `${trimmedInput.toLowerCase()}@algolearn.edu`);
+    const resolvedName = matched?.name || name || resolvedEmail.split('@')[0];
+    const resolvedUsername = matched?.email ? matched.email.split('@')[0].toLowerCase() : resolvedEmail.split('@')[0].toLowerCase();
+
     setUser((prev) => ({
       ...prev,
-      email,
-      name: name || email.split('@')[0],
-      username: email.split('@')[0].toLowerCase(),
+      email: resolvedEmail,
+      name: resolvedName,
+      username: resolvedUsername,
+      regdNo: resolvedRegdNo,
     }));
+
+    if (resolvedRegdNo) {
+      fetch('/api/leaderboard/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName: resolvedName,
+          regdNo: resolvedRegdNo,
+        }),
+      }).catch(() => {});
+    }
+
     setShowAuthModal(false);
+  };
+
+  const registerStudent = async (data: {
+    name: string;
+    regdNo: string;
+    email: string;
+    password?: string;
+  }): Promise<{ success: boolean; message?: string }> => {
+    const trimmedRegd = data.regdNo.trim();
+    const regdRegex = /^[A-Za-z0-9]{10}$/;
+
+    if (!trimmedRegd) {
+      return {
+        success: false,
+        message: 'Regd No. must be exactly 10 characters and contain only letters and numbers.',
+      };
+    }
+
+    if (!regdRegex.test(trimmedRegd)) {
+      return {
+        success: false,
+        message: 'Regd No. must be exactly 10 characters and contain only letters and numbers.',
+      };
+    }
+
+    if (isRegdNoTaken(trimmedRegd, data.email)) {
+      return {
+        success: false,
+        message: 'Registration Number is already registered to another student account.',
+      };
+    }
+
+    // Attempt server API save
+    try {
+      const res = await fetch('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.name.trim(),
+          regdNo: trimmedRegd,
+          email: data.email.trim(),
+          password: data.password || '',
+        }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        if (errorData?.error) {
+          return { success: false, message: errorData.error };
+        }
+      }
+    } catch (e) {
+      // Offline fallback
+    }
+
+    const newRecord: StudentProgressRecord = {
+      id: 'std-' + Date.now(),
+      name: data.name.trim(),
+      email: data.email.trim().toLowerCase(),
+      avatar: '',
+      regdNo: trimmedRegd,
+      topicsStarted: 0,
+      topicsCompleted: 0,
+      overallProgress: 0,
+      lastActive: 'Just now',
+      streak: 1,
+      currentStage: 'Phase 1: Foundations',
+      exploredTopics: [],
+      recentActivities: [
+        {
+          id: 'act-' + Date.now(),
+          title: 'Registered on AlgoLearn',
+          type: 'concept_read',
+          timestamp: 'Just now',
+        },
+      ],
+    };
+
+    setRegisteredStudents((prev) => [newRecord, ...prev]);
+
+    // Log the student in with the registered credentials and Regd No.
+    login(data.email, data.name, trimmedRegd);
+
+    return { success: true };
   };
 
   const loginAsAdmin = (
@@ -456,9 +653,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setIsAuthenticated(false);
     setRole('student');
+    setUser(defaultUser);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('algolearn_auth');
       localStorage.removeItem('algolearn_role');
+      localStorage.removeItem('algolearn_user');
     }
   };
 
@@ -468,11 +667,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         role,
         isAuthenticated,
-        studentsList,
+        studentsList: registeredStudents,
         addXP,
         markTopicProgress,
         solveProblem,
         login,
+        registerStudent,
+        isRegdNoTaken,
         loginAsAdmin,
         logout,
         showAuthModal,
