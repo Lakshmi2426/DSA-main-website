@@ -46,7 +46,7 @@ export const QuickStatsSection: React.FC = () => {
   ];
 
   return (
-    <section className="relative py-8 -mt-6 sm:-mt-8 z-20">
+    <section className="relative py-6 mt-4 sm:mt-6 z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat, index) => {

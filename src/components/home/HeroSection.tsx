@@ -40,7 +40,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setActiveTab }) => {
   }, []);
 
   return (
-    <section className="relative min-h-[85vh] lg:min-h-[92vh] flex items-center justify-start overflow-hidden pt-28 pb-20 lg:pt-36 lg:pb-32 bg-[#070b14] hero">
+    <section className="relative min-h-[80vh] lg:min-h-[86vh] flex items-center justify-start overflow-hidden pt-24 pb-12 lg:pt-32 lg:pb-16 bg-[#070b14] hero">
       {/* LAYER 1: Full-Screen Edge-to-Edge 3D Background Video */}
       <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <video
@@ -54,7 +54,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setActiveTab }) => {
           onCanPlay={() => console.log('[Hero Video] Can play')}
           onPlay={() => console.log('[Hero Video] Video playing')}
           onError={(e) => console.error('[Hero Video] Load error:', e)}
-          className="absolute inset-0 w-full h-full object-cover object-center scale-105 pointer-events-none hero-video opacity-90"
+          className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none hero-video opacity-100"
         >
           <source src={heroBgVideo} type="video/mp4" />
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
@@ -63,9 +63,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setActiveTab }) => {
       </div>
 
       {/* LAYER 2: Subtle Readability Vignette & Gradient Overlay */}
-      {/* Extremely subtle overlay so the entire video background (left, center, right) remains vividly visible */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/75 via-slate-950/30 to-transparent dark:from-[#070b14]/80 dark:via-[#070b14]/35 dark:to-transparent pointer-events-none z-10 hero-overlay" />
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/30 dark:from-[#070b14]/75 dark:via-transparent dark:to-[#070b14]/40 pointer-events-none z-10" />
+      {/* Light localized overlay behind left text so video details on right/center remain crisp and bright */}
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/25 to-transparent dark:from-[#070b14]/75 dark:via-[#070b14]/30 dark:to-transparent pointer-events-none z-10 hero-overlay" />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-slate-950/25 dark:from-[#070b14]/65 dark:via-transparent dark:to-[#070b14]/30 pointer-events-none z-10" />
 
       {/* LAYER 3: Hero Content Layer Overlaid Directly On Video */}
       <div className="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 hero-content">
@@ -83,17 +83,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ setActiveTab }) => {
 
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight tracking-tight text-white mb-6 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-            Master DSA.
-            <br />
-            Learn. Understand.{' '}
+            Build Stronger{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-violet-400 drop-shadow-[0_2px_12px_rgba(99,102,241,0.6)]">
-              Conquer.
+              DSA
             </span>
+            <br />
+            Foundations.
           </h1>
 
           {/* Subheadline / Description */}
           <p className="text-slate-200 text-base sm:text-lg lg:text-xl mb-8 leading-relaxed font-normal max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-            Understand essential data structures and algorithms through interactive visualizers, structured curricula, and direct teacher guidance.
+            Interactive learning, visualizations, and expert guidance to help you master Data Structures and Algorithms.
           </p>
 
           {/* Highlighted feature bullets */}
