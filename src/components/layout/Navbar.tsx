@@ -63,9 +63,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/90 dark:bg-[#05070a]/90 backdrop-blur-md shadow-xs dark:shadow-slate-950/40 border-b border-blue-100/90 dark:border-slate-800/80 py-3'
-          : 'bg-white/60 dark:bg-[#05070a]/50 backdrop-blur-sm py-4 border-b border-blue-100/40 dark:border-slate-800/40'
+          ? 'bg-white dark:bg-[#05070a]/90 dark:backdrop-blur-md shadow-xs dark:shadow-slate-950/40 border-b border-slate-200 dark:border-slate-800/80 py-3'
+          : 'bg-white dark:bg-[#05070a]/50 dark:backdrop-blur-sm py-4 border-b border-slate-200/60 dark:border-slate-800/40'
       }`}
+      style={{
+        backgroundColor: theme === 'dark' ? undefined : '#ffffff',
+        opacity: 1,
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Left: Pure AlgoLearn Brand Logo (Rectangular, no circular avatar wrapper, no box, no background) */}
@@ -268,7 +272,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2"
+            className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/95 dark:backdrop-blur-xl px-4 pt-3 pb-6 space-y-2"
+            style={{ backgroundColor: theme === 'dark' ? undefined : '#ffffff' }}
           >
             {fullNavItems.map((item) => {
               const isActive = activeTab === item.id;

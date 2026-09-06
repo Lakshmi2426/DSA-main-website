@@ -971,8 +971,11 @@ ${String(code)}
   app.post("/api/ai/chat", handleAiChat);
 
   // ============================================================
-  // VITE DEVELOPMENT SERVER
+  // STATIC ASSETS & VITE DEVELOPMENT SERVER
   // ============================================================
+
+  // Serve public static assets (videos, icons, images)
+  app.use(express.static(path.join(process.cwd(), "public")));
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -997,10 +1000,23 @@ ${String(code)}
   // START SERVER
   // ============================================================
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(
-      `AlgoLearn server running on http://0.0.0.0:${PORT}`
-    );
+  const server = app.listen(PORT, () => {
+    console.log(`\n  🚀 AlgoLearn server is running!`);
+    console.log(`  ➜ Local:   http://localhost:${PORT}/`);
+    console.log(`  ➜ Network: http://127.0.0.1:${PORT}/\n`);
+  });
+
+  server.on("error", (err: any) => {
+    if (err.code === "EADDRINUSE") {
+      console.warn(`\n  [Port Warning] Port ${PORT} is in use, attempting port ${PORT + 1}...`);
+      app.listen(PORT + 1, () => {
+        console.log(`\n  🚀 AlgoLearn server is running!`);
+        console.log(`  ➜ Local:   http://localhost:${PORT + 1}/`);
+        console.log(`  ➜ Network: http://127.0.0.1:${PORT + 1}/\n`);
+      });
+    } else {
+      console.error("  [Server Error]", err);
+    }
   });
 }
 
